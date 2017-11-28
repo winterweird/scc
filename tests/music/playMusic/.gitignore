@@ -1,0 +1,6 @@
+# don't upload the songs used in this test; they're too big
+*.mp3
+*.flac
+*.ogg
+*.mid
+*.midi
