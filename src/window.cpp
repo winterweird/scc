@@ -20,7 +20,6 @@
 */
 
 #include <memory>
-#include <stdexcept>
 #include <SDL.h>
 #include "cstylealloc.hpp"
 #include "renderer.hpp"
@@ -41,7 +40,7 @@ Window::Window(
 	: window_{CStyleAlloc<Window::Deleter>::alloc(
 		SDL_CreateWindow,
 		"Making window failed",
-		title, width, height, x, y, flags)}
+		title, x, y, width, height, flags)}
 {
 	// here, window_ has valid data.
 	// This assignment will swap the rvalue with the previously constructed

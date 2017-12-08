@@ -34,9 +34,9 @@ class Surface;
 class Renderer;
 
 class Texture {
-	// TODO texture clips
-	// TODO textures with SDL_TEXTUREACCESS_STREAMING and
-	// SDL_TEXTUREACCESS_TARGET
+	friend class Renderer;
+
+	// TODO texture streaming
 public:
 	// The ctors are meant to be called from Renderer's makeTexture().
 
@@ -66,9 +66,6 @@ public:
 	// Errors are ignored.
 	int getWidth() const;
 	int getHeight() const;
-
-	// (x, y): top-left coordinates
-	void render(Renderer &renderer, int x, int y) const;
 
 	Texture(const Texture &that) = delete;
 	Texture(Texture &&that) = default;

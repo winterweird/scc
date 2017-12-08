@@ -96,16 +96,6 @@ void swap(Texture &first, Texture &second) noexcept
 
 } // namespace SDL
 
-void Texture::render(Renderer &renderer, int x, int y) const
-{
-	SDL_Rect dest;
-	dest.x = x;
-	dest.y = y;
-	query(NULL, NULL, &dest.w, &dest.h);
-	// NULL for the entire texture
-	renderer.renderCopy(texture_.get(), NULL, &dest);
-}
-
 int Texture::query(Uint32 *format, int *access, int *w, int *h) const
 {
 	return SDL_QueryTexture(texture_.get(), format, access, w, h);

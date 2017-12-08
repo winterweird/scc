@@ -20,28 +20,18 @@
 */
 
 #include <SDL.h>
-#include <SDL_image.h>
-#include <SDL_ttf.h>
 #include "window.hpp"
 #include "renderer.hpp"
 #include "texture.hpp"
-#include "truetypefont.hpp"
+
+using SDL::Window;
+using SDL::Texture;
 
 const int ERR_SDL_INIT = -1;
 
-// change this to match some font in your system
-const char *fontPath = "/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf";
-const int fontSize = 24;
-
-bool init(Uint32 sdlInitFlags, Uint32 imgInitFlags)
+bool init(Uint32 sdlInitFlags)
 {
 	if(SDL_Init(sdlInitFlags) < 0) {
-		return false;
-	}
-	if(IMG_Init(imgInitFlags) != imgInitFlags) {
-		return false;
-	}
-	if(TTF_Init() < 0) {
 		return false;
 	}
 	return true;
@@ -50,26 +40,26 @@ bool init(Uint32 sdlInitFlags, Uint32 imgInitFlags)
 void quit()
 {
 	SDL_Quit();
-	IMG_Quit();
-	TTF_Quit();
 }
 
 void gameLoop()
 {
-	SDL::Window window("test");
-	SDL::TrueTypeFont font(fontPath, fontSize);
-	SDL::Texture lowerTexture = window.renderer.makeTexture(
-		"the quick brown fox jumps over the lazy dog",
-		font,
-		SDL_Color{0, 0, 0, 255}
-	);
-	SDL::Texture upperTexture = window.renderer.makeTexture(
-		"THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG",
-		font,
-		SDL_Color{0, 0, 0, 255}
-	);
+	Uint32 rendererFlags = SDL_RENDERER_ACCELERATED
+		| SDL_RENDERER_PRESENTVSYNC
+		| SDL_RENDERER_TARGETTEXTURE;
 
-	window.renderer.setRenderDrawColor(255, 255, 255, 255);
+	Window window("test", Window::DEFAULT_WIDTH, Window::DEFAULT_HEIGHT,
+		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+		Window::DEFAULT_INIT_FLAGS, rendererFlags);
+	const int windowWidth = window.getWidth();
+	const int windowHeight = window.getHeight();
+
+	// get first supported format
+	Uint32 format = *(window.renderer.getInfo().texture_formats);
+	const int textureWidth = 100;
+	const int textureHeight = 100;
+	Texture targetTexture = window.renderer.makeTexture(format,
+		SDL_TEXTUREACCESS_TARGET, textureWidth, textureHeight);
 
 	bool quit = false;
 	while(!quit) {
@@ -79,23 +69,34 @@ void gameLoop()
 				quit = true;
 			}
 		}
-		window.renderer.renderClear();
 
-		lowerTexture.render(window.renderer,
-			(window.getWidth() - lowerTexture.getWidth()) / 2, 
-			(window.getHeight() - lowerTexture.getHeight()) / 4);
-		upperTexture.render(window.renderer,
-			(window.getWidth() - upperTexture.getWidth()) / 2,
-			(window.getHeight() - upperTexture.getHeight()) * 3/4);
+		window.renderer.setDrawColor(0, 0, 0, 0xff);
+		window.renderer.clear();
 
-		window.renderer.renderPresent();
+		bool targetIsSet = window.renderer.setTarget(targetTexture);
+		if(!targetIsSet) {
+			SDL_Log("setTarget doesn't work: %s", SDL_GetError());
+			break;
+		}
+		window.renderer.setDrawColor(0xff, 0xff, 0xff, 0xff);
+		window.renderer.drawLine(textureWidth / 2, 0,
+			textureWidth / 2, 100);
+		window.renderer.drawLine(0, textureHeight / 2,
+			100, textureHeight / 2);
+
+		window.renderer.setTarget(nullptr);
+		window.renderer.render(targetTexture,
+			(windowWidth - textureWidth) / 2,
+			(windowHeight - textureHeight) / 2);
+
+		window.renderer.present();
 	}
 }
+
 int main(int argc, char **argv)
 {
 	Uint32 sdlFlags = SDL_INIT_VIDEO | SDL_INIT_TIMER;
-	Uint32 imgFlags = IMG_INIT_JPG | IMG_INIT_PNG; 
-	if(!init(sdlFlags, imgFlags)) {
+	if(!init(sdlFlags)) {
 		SDL_LogCritical(SDL_LOG_CATEGORY_ERROR,
 			"couldn't initialize SDL\n");
 		return ERR_SDL_INIT;

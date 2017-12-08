@@ -1,6 +1,5 @@
 ==== NOW =====
-Test construction from RWops directly
-Test "empty" Texture creation / render to texture
+Texture streaming
 Renderer stuff (viewports, alpha modulation, blend mode...)
 
 ==== LATER ====

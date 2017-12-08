@@ -21,13 +21,17 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
-#include "config.hpp"
+#include <SDL_ttf.h>
 #include "window.hpp"
 #include "renderer.hpp"
 #include "texture.hpp"
+#include "truetypefont.hpp"
 
 const int ERR_SDL_INIT = -1;
-const char *imagePath = "foo.jpg";
+
+// change this to match some font in your system
+const char *fontPath = "/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf";
+const int fontSize = 24;
 
 bool init(Uint32 sdlInitFlags, Uint32 imgInitFlags)
 {
@@ -37,6 +41,9 @@ bool init(Uint32 sdlInitFlags, Uint32 imgInitFlags)
 	if(IMG_Init(imgInitFlags) != imgInitFlags) {
 		return false;
 	}
+	if(TTF_Init() < 0) {
+		return false;
+	}
 	return true;
 }
 
@@ -44,15 +51,34 @@ void quit()
 {
 	SDL_Quit();
 	IMG_Quit();
+	TTF_Quit();
 }
 
 void gameLoop()
 {
 	SDL::Window window("test");
-	SDL::Texture imgTexture = window.renderer.makeTexture(imagePath);
+	int windowWidth = window.getWidth();
+	int windowHeight = window.getHeight();
 
-	SDL_Log("texture width: %d", imgTexture.getWidth());
-	SDL_Log("texture height: %d", imgTexture.getHeight());
+	SDL::TrueTypeFont font(fontPath, fontSize);
+
+	SDL::Texture lowerTexture = window.renderer.makeTexture(
+		"the quick brown fox jumps over the lazy dog",
+		font,
+		SDL_Color{0, 0, 0, 255}
+	);
+	int lowerWidth = lowerTexture.getWidth();
+	int lowerHeight = lowerTexture.getHeight();
+
+	SDL::Texture upperTexture = window.renderer.makeTexture(
+		"THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG",
+		font,
+		SDL_Color{0, 0, 0, 255}
+	);
+	int upperWidth = upperTexture.getWidth();
+	int upperHeight = upperTexture.getHeight();
+
+	window.renderer.setDrawColor(255, 255, 255, 255);
 
 	bool quit = false;
 	while(!quit) {
@@ -62,19 +88,18 @@ void gameLoop()
 				quit = true;
 			}
 		}
-		window.renderer.setRenderDrawColor(255, 255, 255, 255);
-		window.renderer.renderClear();
+		window.renderer.clear();
 
-		imgTexture.render(
-			window.renderer,
-			(window.getWidth() - imgTexture.getWidth()) / 2,
-			(window.getHeight() - imgTexture.getHeight()) / 2
-		);
+		window.renderer.render(lowerTexture,
+			(windowWidth - lowerWidth) / 2, 
+			(windowHeight - lowerHeight) / 4);
+		window.renderer.render(upperTexture,
+			(windowWidth - upperWidth) / 2,
+			(windowHeight - upperHeight) * 3/4);
 
-		window.renderer.renderPresent();
+		window.renderer.present();
 	}
 }
-
 int main(int argc, char **argv)
 {
 	Uint32 sdlFlags = SDL_INIT_VIDEO | SDL_INIT_TIMER;

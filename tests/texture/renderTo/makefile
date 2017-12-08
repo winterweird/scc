@@ -9,7 +9,7 @@ LDLIBS = -lSDL2
 TESTOBJ = main.o
 SRCDIR = $(SCC_ROOT_DIR)/src
 OBJ = window.o renderer.o texture.o rwops.o
-BIN = blankWindow
+BIN = renderTo
 
 $(BIN) : $(OBJ) $(TESTOBJ)
 	$(CXX) -o $(BIN) $^ $(LDLIBS)

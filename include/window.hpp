@@ -33,8 +33,6 @@ class Window {
 public:
 	static const int DEFAULT_WIDTH = 800;
 	static const int DEFAULT_HEIGHT = 600;
-	static const int DEFAULT_X_COORD = SDL_WINDOWPOS_UNDEFINED;
-	static const int DEFAULT_Y_COORD = SDL_WINDOWPOS_UNDEFINED;
 	static const Uint32 DEFAULT_INIT_FLAGS = 0;
 
 	// Having Renderer as Window's member object is the easiest way of
@@ -47,8 +45,8 @@ public:
 	Window(const char *title,
 		int width = DEFAULT_WIDTH,
 		int height = DEFAULT_HEIGHT,
-		int x = DEFAULT_X_COORD,
-		int y = DEFAULT_Y_COORD,
+		int x = SDL_WINDOWPOS_UNDEFINED,
+		int y = SDL_WINDOWPOS_UNDEFINED,
 		Uint32 flags = DEFAULT_INIT_FLAGS,
 		Uint32 rendererFlags = Renderer::DEFAULT_INIT_FLAGS);
 
@@ -59,12 +57,12 @@ public:
 	Window & operator=(Window that);
 	friend void swap(Window &first, Window &second) noexcept;
 
-	// SDL_GetWindowSize(). You may pass NULL as a parameter if you're not
+	// SDL_GetWindowSize. You may pass NULL as a parameter if you're not
 	// interested in its value, though you can also use getWidth() or
 	// getHeight() in that case
 	void getSize(int *width, int *height) const;
 
-	// wrappers around SDL_GetWindowSize(), but they return the value.
+	// wrappers around SDL_GetWindowSize, but they return the value.
 	int getWidth() const;
 	int getHeight() const;
 

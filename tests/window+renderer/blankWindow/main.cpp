@@ -41,7 +41,7 @@ void gameLoop()
 	SDL_Log("window width: %d", window.getWidth());
 	SDL_Log("window height: %d", window.getHeight());
 
-	window.renderer.setRenderDrawColor(0, 0, 0, 255); // black
+	window.renderer.setDrawColor(0, 0, 0, 255); // black
 
 	bool quit = false;
 	while(!quit) {
@@ -51,8 +51,8 @@ void gameLoop()
 				quit = true;
 			}
 		}
-		window.renderer.renderClear();
-		window.renderer.renderPresent();
+		window.renderer.clear();
+		window.renderer.present();
 	}
 }
 

@@ -20,41 +20,44 @@
 */
 
 #include <SDL.h>
+#include <SDL_image.h>
 #include "config.hpp"
 #include "window.hpp"
-using SDL::Window;
+#include "renderer.hpp"
+#include "texture.hpp"
 
 const int ERR_SDL_INIT = -1;
+const char *imagePath = "foo.jpg";
 
-bool init(Uint32 sdlInitFlags)
+bool init(Uint32 sdlInitFlags, Uint32 imgInitFlags)
 {
-	return SDL_Init(sdlInitFlags) == 0;
+	if(SDL_Init(sdlInitFlags) < 0) {
+		return false;
+	}
+	if(IMG_Init(imgInitFlags) != imgInitFlags) {
+		return false;
+	}
+	return true;
 }
 
 void quit()
 {
 	SDL_Quit();
-}
-
-inline void parseWindowEvent(const SDL_Event &e, Window &window)
-{
-	// this one is guaranteed every time the window changes, unlinke
-	// SDL_WINDOW_EVENT_RESIZED
-	if(e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-		SDL_Log("(SDL_event data) new size:\t%d x %d\n",
-			e.window.data1, e.window.data2);
-		SDL_Log("(SDL::Window data) new size:\t%d x %d\n",
-			window.getWidth(), window.getHeight());
-	}
+	IMG_Quit();
 }
 
 void gameLoop()
 {
-	Window window("test", Window::DEFAULT_WIDTH, Window::DEFAULT_HEIGHT,
-		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-		SDL_WINDOW_RESIZABLE);
+	SDL::Window window("test");
+	int windowWidth = window.getWidth();
+	int windowHeight = window.getHeight();
 
-	window.renderer.setDrawColor(0, 0, 0, 255); // black
+	SDL::Texture imgTexture = window.renderer.makeTexture(imagePath);
+	int textureWidth = imgTexture.getWidth();
+	int textureHeight = imgTexture.getHeight();
+
+	SDL_Log("texture width: %d", textureWidth);
+	SDL_Log("texture height: %d", textureHeight);
 
 	bool quit = false;
 	while(!quit) {
@@ -62,18 +65,24 @@ void gameLoop()
 		while(SDL_PollEvent(&e)) {
 			if(e.type == SDL_QUIT) {
 				quit = true;
-			} else if(e.type == SDL_WINDOWEVENT) {
-				parseWindowEvent(e, window);
 			}
 		}
+		window.renderer.setDrawColor(255, 255, 255, 255);
 		window.renderer.clear();
+
+		window.renderer.render(imgTexture,
+			(windowWidth - textureWidth) / 2,
+			(windowHeight - textureHeight) / 2);
+
 		window.renderer.present();
 	}
 }
 
 int main(int argc, char **argv)
 {
-	if(!init(SDL_INIT_VIDEO)) {
+	Uint32 sdlFlags = SDL_INIT_VIDEO | SDL_INIT_TIMER;
+	Uint32 imgFlags = IMG_INIT_JPG | IMG_INIT_PNG; 
+	if(!init(sdlFlags, imgFlags)) {
 		SDL_LogCritical(SDL_LOG_CATEGORY_ERROR,
 			"couldn't initialize SDL\n");
 		return ERR_SDL_INIT;

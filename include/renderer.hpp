@@ -23,6 +23,7 @@
 #define SCC_RENDERER_HPP
 
 #include <memory>
+#include <vector>
 #include <SDL.h>
 #include "texture.hpp"
 
@@ -50,16 +51,45 @@ public:
 		return Texture(renderer_.get(), std::forward<Args>(args)...);
 	}
 
-	void renderPresent();
-	void renderClear();
-	void setRenderDrawColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a = 0xff);
+	void present();
+	void clear();
+	void setDrawColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a = 0xff);
 
-	// TODO primitives drawing
+	// all render() functions below render with SDL_RenderCopy.
+	// Remember you need to call present() when you're done.
+	// TODO function render texture clip
 
-	// meant to be called from Texture's render().
-	void renderCopy(SDL_Texture *texture,
-		const SDL_Rect *src = NULL,
+	// renders the entire texture with its own width and height.
+	// (x, y): top-left coordinates
+	void render(Texture &texture, int x, int y) const;
+	void render(Texture &texture, const SDL_Rect *src = NULL,
 		const SDL_Rect *dest = NULL) const;
+
+	// These will call SDL_SetError if this Renderer wasn't created with
+	// SDL_RENDERER_TARGETTEXTURE. They return false on failure.
+	bool setTarget(Texture &texture) const;
+	// Does the actual work. You can use this to pass either NULL or
+	// nullptr, which will set the target as the default
+	bool setTarget(SDL_Texture *texture) const;
+
+	SDL_RendererInfo getInfo() const;
+
+	// these also return false on failure.
+	bool drawPoint(int x, int y) const;
+	bool drawPoints(const std::vector<SDL_Point> points) const;
+
+	bool drawLine(int x1, int y1, int x2, int y2) const;
+	bool drawLine(const SDL_Point &p1, const SDL_Point &p2) const
+	{
+		return drawLine(p1.x, p1.y, p2.x, p2.y);
+	}
+	bool drawLines(const std::vector<SDL_Point> points) const;
+
+	bool drawRect(const SDL_Rect *rect) const;
+	bool drawRects(const std::vector<SDL_Rect> rects) const;
+
+	bool fillRect(const SDL_Rect *rect) const;
+	bool fillRects(const std::vector<SDL_Rect> rects) const;
 
 	// renderers must NOT be copied. They belong to 1 window only.
 	Renderer(const Renderer &that) = delete;
