@@ -57,7 +57,7 @@ public:
 
 	// all render() functions below render with SDL_RenderCopy.
 	// Remember you need to call present() when you're done.
-	// TODO function render texture clip
+	// TODO function for rendering texture clip
 
 	// renders the entire texture with its own width and height.
 	// (x, y): top-left coordinates

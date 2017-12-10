@@ -114,3 +114,13 @@ int Texture::getHeight() const
 	SDL_QueryTexture(texture_.get(), NULL, NULL, NULL, &height);
 	return height;
 }
+
+bool Texture::lock(const SDL_Rect *rect, void **pixels, int *pitch)
+{
+	return SDL_LockTexture(texture_.get(), rect, pixels, pitch) >= 0;
+}
+
+void Texture::unlock()
+{
+	SDL_UnlockTexture(texture_.get());
+}

@@ -44,22 +44,17 @@ void quit()
 
 void gameLoop()
 {
-	Uint32 rendererFlags = SDL_RENDERER_ACCELERATED
-		| SDL_RENDERER_PRESENTVSYNC
-		| SDL_RENDERER_TARGETTEXTURE;
-
-	Window window("test", Window::DEFAULT_WIDTH, Window::DEFAULT_HEIGHT,
-		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-		Window::DEFAULT_INIT_FLAGS, rendererFlags);
+	Window window("test");
 	const int windowWidth = window.getWidth();
 	const int windowHeight = window.getHeight();
 
 	// get first supported format
 	Uint32 format = *(window.renderer.getInfo().texture_formats);
+	SDL_Log("texture format: %s", SDL_GetPixelFormatName(format));
 	const int textureWidth = 100;
 	const int textureHeight = 100;
-	Texture targetTexture = window.renderer.makeTexture(format,
-		SDL_TEXTUREACCESS_TARGET, textureWidth, textureHeight);
+	Texture streamTexture = window.renderer.makeTexture(format,
+		SDL_TEXTUREACCESS_STREAMING, textureWidth, textureHeight);
 
 	bool quit = false;
 	while(!quit) {
@@ -73,19 +68,40 @@ void gameLoop()
 		window.renderer.setDrawColor(0, 0, 0, 0xff);
 		window.renderer.clear();
 
-		bool targetIsSet = window.renderer.setTarget(targetTexture);
-		if(!targetIsSet) {
-			SDL_Log("setTarget doesn't work: %s", SDL_GetError());
-			break;
-		}
-		window.renderer.setDrawColor(0xff, 0xff, 0xff, 0xff);
-		window.renderer.drawLine(textureWidth / 2, 0,
-			textureWidth / 2, 100);
-		window.renderer.drawLine(0, textureHeight / 2,
-			100, textureHeight / 2);
+		int pitch;
+		void *lockedPixels;
+		const int lockedWidth = textureWidth;
+		const int lockedHeight = textureHeight;
+		const SDL_Rect lockArea{0, 0, lockedWidth, lockedHeight};
 
-		window.renderer.setTarget(nullptr);
-		window.renderer.render(targetTexture,
+		bool locked = streamTexture.lock(&lockArea, &lockedPixels,
+			&pitch);
+		if(!locked) {
+			SDL_Log("couldn't lock texture: %s\n", SDL_GetError());
+			quit = true;
+		}
+
+		int row = rand() % textureHeight;
+		int col = rand() % textureWidth;
+		int pixelSize = pitch / textureWidth; // in bytes
+		for(int i = 0; i < pixelSize; i++) {
+			// "reinterpret_cast [...] is purely a compiler
+			// directive which instructs the compiler to treat the
+			// sequence of bits (object representation) of
+			// expression as if it had the type new_type"
+			// <en.cppreference.com/w/cpp/language/reinterpret_cast>
+			// So yes, reinterpret_cast keeps the pointer's value
+			unsigned char *bytePtr =
+				reinterpret_cast<unsigned char*>(lockedPixels)
+				+ row * pitch + col * pixelSize + i;
+			// what color this gives might depend on the texture's
+			// format; it's white with RGB(A)
+			*bytePtr = 0xff;
+		}
+
+		streamTexture.unlock();
+
+		window.renderer.render(streamTexture,
 			(windowWidth - textureWidth) / 2,
 			(windowHeight - textureHeight) / 2);
 

@@ -35,8 +35,6 @@ class Renderer;
 
 class Texture {
 	friend class Renderer;
-
-	// TODO texture streaming
 public:
 	// The ctors are meant to be called from Renderer's makeTexture().
 
@@ -66,6 +64,12 @@ public:
 	// Errors are ignored.
 	int getWidth() const;
 	int getHeight() const;
+
+	// warning:
+	// as SDL documentation states, the data in pixels is not necessarily
+	// meaningful; you're supposed to write to it, not to read from it.
+	bool lock(const SDL_Rect *rect, void **pixels, int *pitch);
+	void unlock();
 
 	Texture(const Texture &that) = delete;
 	Texture(Texture &&that) = default;

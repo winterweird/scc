@@ -1,9 +1,8 @@
 ==== NOW =====
-Texture streaming
 Renderer stuff (viewports, alpha modulation, blend mode...)
+Multiple Window support
 
 ==== LATER ====
-Multiple Window support
 Texture clips
 OpenGL stuff
 SDL_mixer sound effects stuff
