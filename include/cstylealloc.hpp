@@ -66,10 +66,6 @@ struct CStyleAlloc {
 	// that to a SFINAE"
 	// (<en.cppreference.com/w/cpp/types/result_of>)
 	//
-	// - we don't check if f actually returns a pointer. If we could
-	// create an alias to f's return type that would be easy
-	// (std::is_pointer), but again, I don't think it's possible
-	//
 	// Lo, and behold: C++ templates in all their majesty!
 	//
 	template<typename F, typename ... Args>
@@ -82,6 +78,8 @@ struct CStyleAlloc {
 	>
 	{
 		auto tmp = f(std::forward<Args>(args)...);
+		static_assert(std::is_pointer<decltype(tmp)>::value,
+			"CStyleAlloc: f must return a pointer");
 		if(tmp == NULL) {
 			throw std::runtime_error(errorMsg);
 		}
