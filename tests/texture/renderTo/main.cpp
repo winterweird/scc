@@ -55,7 +55,9 @@ void gameLoop()
 	const int windowHeight = window.getHeight();
 
 	// get first supported format
-	Uint32 format = *(window.renderer.getInfo().texture_formats);
+	SDL_RendererInfo info;
+	window.renderer.getInfo(&info);
+	Uint32 format = *(info.texture_formats);
 	const int textureWidth = 100;
 	const int textureHeight = 100;
 	Texture targetTexture = window.renderer.makeTexture(format,

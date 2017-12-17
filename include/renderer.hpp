@@ -53,28 +53,50 @@ public:
 
 	void present();
 	void clear();
-	void setDrawColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a = 0xff);
+	bool setDrawColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a = 0xff);
+	bool getDrawColor(Uint8 *r, Uint8 *g, Uint8 *b, Uint8 *a) const;
 
-	// all render() functions below render with SDL_RenderCopy.
-	// Remember you need to call present() when you're done.
-	// TODO function for rendering texture clip
+	// Remember you need to call present() when you're done rendering!
 
-	// renders the entire texture with its own width and height.
+	// renders a part or the entire texture with its own width and height,
+	// using SDL_RenderCopy().
 	// (x, y): top-left coordinates
-	void render(Texture &texture, int x, int y) const;
-	void render(Texture &texture, const SDL_Rect *src = NULL,
+	// src: the portion of the texture to be copied, NULL for whole texture
+	bool render(Texture &texture, int x, int y,
+		const SDL_Rect *src = NULL) const;
+
+	// SDL_RenderCopy()
+	bool render(Texture &texture, const SDL_Rect *src = NULL,
 		const SDL_Rect *dest = NULL) const;
 
+	// SDL_RenderCopyEx()
+	bool render(Texture &texture, const SDL_Rect *src, const SDL_Rect *dest,
+		const double angle, const SDL_Point *center,
+		const SDL_RendererFlip flip = SDL_FLIP_NONE) const;
+
 	// These will call SDL_SetError if this Renderer wasn't created with
-	// SDL_RENDERER_TARGETTEXTURE. They return false on failure.
-	bool setTarget(Texture &texture) const;
+	// SDL_RENDERER_TARGETTEXTURE.
+	bool setTarget(Texture &texture);
 	// Does the actual work. You can use this to pass either NULL or
 	// nullptr, which will set the target as the default
-	bool setTarget(SDL_Texture *texture) const;
+	bool setTarget(SDL_Texture *texture);
 
-	SDL_RendererInfo getInfo() const;
+	bool setScale(float scaleX, float scaleY);
+	void getScale(float *scaleX, float *scaleY) const;
 
-	// these also return false on failure.
+	void getViewport(SDL_Rect *rect) const;
+	bool setViewport(const SDL_Rect *rect);
+
+	void getLogicalSize(int *w, int *h) const;
+	bool setLogicalSize(int w, int h);
+
+	bool getOutputSize(int *w, int *h) const;
+	bool getInfo(SDL_RendererInfo *info) const;
+
+	// "used for drawing operations (Fill and Line)" (SDL wiki)
+	bool setDrawBlendMode(SDL_BlendMode mode);
+	bool getDrawBlendMode(SDL_BlendMode *mode) const;
+
 	bool drawPoint(int x, int y) const;
 	bool drawPoints(const std::vector<SDL_Point> points) const;
 
@@ -90,6 +112,9 @@ public:
 
 	bool fillRect(const SDL_Rect *rect) const;
 	bool fillRects(const std::vector<SDL_Rect> rects) const;
+
+	// TODO readPixels(), updateTexture(), setClip(), getClip(),
+	// isClipEnabled()
 
 	// renderers must NOT be copied. They belong to 1 window only.
 	Renderer(const Renderer &that) = delete;

@@ -22,6 +22,7 @@
 #include <SDL.h>
 #include "config.hpp"
 #include "window.hpp"
+using SDL::Window;
 
 const int ERR_SDL_INIT = -1;
 
@@ -37,16 +38,19 @@ void quit()
 
 void gameLoop()
 {
-	SDL::Window window("test");
-	SDL_Log("window width: %d", window.getWidth());
-	SDL_Log("window height: %d", window.getHeight());
+	Window window("test");
+	const int windowWidth = window.getWidth();
+	const int windowHeight = window.getHeight();
+	const SDL_Rect screenRect{0, 0, windowWidth, windowHeight};
 
-	int outputWidth, outputHeight;
-	window.renderer.getOutputSize(&outputWidth, &outputHeight);
-	SDL_Log("renderer output width: %d", outputWidth);
-	SDL_Log("renderer output height: %d", outputHeight);
-
-	window.renderer.setDrawColor(0, 0, 0, 255); // black
+	const SDL_Rect viewport1{0, 0,
+		windowWidth * 2 / 5, windowHeight * 2 / 5};
+	const SDL_Rect viewport2{windowWidth * 3 / 5, 0,
+		windowWidth * 2 / 5, windowHeight * 3 / 8};
+	const SDL_Rect viewport3{windowWidth * 3 / 5, windowHeight * 3 / 5,
+		windowWidth * 2 / 5, windowHeight * 2 / 5};
+	const SDL_Rect viewport4{0, windowHeight * 3 / 5,
+		windowWidth * 2 / 5, windowHeight * 2 / 5};
 
 	bool quit = false;
 	while(!quit) {
@@ -56,7 +60,31 @@ void gameLoop()
 				quit = true;
 			}
 		}
+		window.renderer.setDrawColor(0x00, 0x00, 0x00, 0xff); // black
 		window.renderer.clear();
+
+		// after this, the background color should be red
+		window.renderer.setDrawColor(0xff, 0x00, 0x00, 0xff);
+		window.renderer.setViewport(nullptr);
+		window.renderer.fillRect(&screenRect);
+
+		window.renderer.setDrawColor(0xff, 0xff, 0xff, 0xff); // white
+
+		// all fillRect() calls below shouldn't fill the whole screen,
+		// but rather only the viewports
+	
+		window.renderer.setViewport(&viewport1);
+		window.renderer.fillRect(&screenRect);
+
+		window.renderer.setViewport(&viewport2);
+		window.renderer.fillRect(&screenRect);
+
+		window.renderer.setViewport(&viewport3);
+		window.renderer.fillRect(&screenRect);
+
+		window.renderer.setViewport(&viewport4);
+		window.renderer.fillRect(&screenRect);
+
 		window.renderer.present();
 	}
 }

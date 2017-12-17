@@ -22,6 +22,7 @@
 #include <SDL.h>
 #include "config.hpp"
 #include "window.hpp"
+using SDL::Window;
 
 const int ERR_SDL_INIT = -1;
 
@@ -37,16 +38,17 @@ void quit()
 
 void gameLoop()
 {
-	SDL::Window window("test");
-	SDL_Log("window width: %d", window.getWidth());
-	SDL_Log("window height: %d", window.getHeight());
+	const int windowWidth = Window::DEFAULT_WIDTH;
+	const int windowHeight = Window::DEFAULT_HEIGHT;
 
-	int outputWidth, outputHeight;
-	window.renderer.getOutputSize(&outputWidth, &outputHeight);
-	SDL_Log("renderer output width: %d", outputWidth);
-	SDL_Log("renderer output height: %d", outputHeight);
+	Window window("test", windowWidth, windowHeight,
+		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+		SDL_WINDOW_RESIZABLE);
+	int logicalWidth = 100;
+	int logicalHeight = 100;
+	const SDL_Rect rect{0, 0, windowWidth, windowHeight};
 
-	window.renderer.setDrawColor(0, 0, 0, 255); // black
+	window.renderer.setLogicalSize(logicalWidth, logicalHeight);
 
 	bool quit = false;
 	while(!quit) {
@@ -54,9 +56,17 @@ void gameLoop()
 		while(SDL_PollEvent(&e)) {
 			if(e.type == SDL_QUIT) {
 				quit = true;
+			} else if(e.type == SDL_KEYDOWN) {
 			}
 		}
+		window.renderer.setDrawColor(0x00, 0x00, 0x00, 0xff);
 		window.renderer.clear();
+
+		window.renderer.setDrawColor(0xff, 0x00, 0x00, 0xff);
+		// the red portion should always appear as a square, regardless
+		// of the window's dimensions
+		window.renderer.fillRect(&rect);
+
 		window.renderer.present();
 	}
 }

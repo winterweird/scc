@@ -8,7 +8,7 @@ LDLIBS = -lSDL2
 
 TESTOBJ = main.o
 SRCDIR = $(SCC_ROOT_DIR)/src
-OBJ = window.o renderer.o texture.o rwops.o
+OBJ = window.o renderer.o texture.o
 BIN = resizableWindow
 
 $(BIN) : $(OBJ) $(TESTOBJ)

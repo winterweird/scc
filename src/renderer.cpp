@@ -64,41 +64,57 @@ void Renderer::clear()
 	SDL_RenderClear(renderer_.get());
 }
 
-void Renderer::setDrawColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a)
+bool Renderer::setDrawColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a)
 {
-	SDL_SetRenderDrawColor(renderer_.get(), r, g, b, a);
+	return SDL_SetRenderDrawColor(renderer_.get(), r, g, b, a) >= 0;
 }
 
-void Renderer::render(Texture &texture, int x, int y) const
+bool Renderer::getDrawColor(Uint8 *r, Uint8 *g, Uint8 *b, Uint8 *a) const
+{
+	return SDL_GetRenderDrawColor(renderer_.get(), r, g, b, a) >= 0;
+}
+
+bool Renderer::render(Texture &texture, int x, int y, const SDL_Rect *src) const
 {
 	SDL_Rect dest;
 	dest.x = x;
 	dest.y = y;
 	texture.query(NULL, NULL, &dest.w, &dest.h);
 
-	// NULL for the entire texture
-	SDL_RenderCopy(renderer_.get(), texture.texture_.get(), NULL, &dest);
+	return SDL_RenderCopy(renderer_.get(), texture.texture_.get(),
+		src, &dest) >= 0;
 }
 
-void Renderer::render(Texture &texture, const SDL_Rect *src,
+bool Renderer::render(Texture &texture, const SDL_Rect *src,
 	const SDL_Rect *dest) const
 {
-	SDL_RenderCopy(renderer_.get(), texture.texture_.get(), src, dest);
+	return SDL_RenderCopy(renderer_.get(), texture.texture_.get(),
+		src, dest) >= 0;
 }
 
-bool Renderer::setTarget(Texture &texture) const
+bool Renderer::render(Texture &texture,
+	const SDL_Rect *src, const SDL_Rect *dest, const double angle,
+	const SDL_Point *center, const SDL_RendererFlip flip) const
+{
+	return SDL_RenderCopyEx(renderer_.get(), texture.texture_.get(),
+		src, dest, angle, center, flip) >= 0;
+}
+
+bool Renderer::setTarget(Texture &texture)
 {
 	return setTarget(texture.texture_.get());
 }
 
-bool Renderer::setTarget(SDL_Texture *texture) const
+bool Renderer::setTarget(SDL_Texture *texture)
 {
 	// "Before using this function, you should check the
 	// SDL_RENDERER_TARGETTEXTURE bit in the flags of SDL_RendererInfo to
 	// see if render targets are supported."
 	// (<wiki.libsdl.org/SDL_SetRenderTarget>)
 	// Well, here it is
-	if((getInfo().flags & SDL_RENDERER_TARGETTEXTURE) == 0) {
+	SDL_RendererInfo info;
+	getInfo(&info);
+	if((info.flags & SDL_RENDERER_TARGETTEXTURE) == 0) {
 		SDL_SetError("renderer can't use texture as target");
 		return false;
 	}
@@ -109,11 +125,57 @@ bool Renderer::setTarget(SDL_Texture *texture) const
 	return SDL_SetRenderTarget(renderer_.get(), texture) >= 0;
 }
 
-SDL_RendererInfo Renderer::getInfo() const
+bool Renderer::setScale(float scaleX, float scaleY)
 {
-	SDL_RendererInfo info;
-	SDL_GetRendererInfo(renderer_.get(), &info);
-	return info;
+	return SDL_RenderSetScale(renderer_.get(), scaleX, scaleY) >= 0;
+}
+
+void Renderer::getScale(float *scaleX, float *scaleY) const
+{
+	SDL_RenderGetScale(renderer_.get(), scaleX, scaleY);
+}
+
+void Renderer::getViewport(SDL_Rect *rect) const
+{
+	SDL_RenderGetViewport(renderer_.get(), rect);
+}
+
+bool Renderer::setViewport(const SDL_Rect *rect)
+{
+	if(rect == nullptr) {
+		rect = NULL;
+	}
+	return SDL_RenderSetViewport(renderer_.get(), rect) >= 0;
+}
+
+void Renderer::getLogicalSize(int *w, int *h) const
+{
+	SDL_RenderGetLogicalSize(renderer_.get(), w, h);
+}
+
+bool Renderer::setLogicalSize(int w, int h)
+{
+	return SDL_RenderSetLogicalSize(renderer_.get(), w, h) >= 0;
+}
+
+bool Renderer::getOutputSize(int *w, int *h) const
+{
+	return SDL_GetRendererOutputSize(renderer_.get(), w, h) >= 0;
+}
+
+bool Renderer::getInfo(SDL_RendererInfo *info) const
+{
+	return SDL_GetRendererInfo(renderer_.get(), info) >= 0;
+}
+
+bool Renderer::setDrawBlendMode(SDL_BlendMode mode)
+{
+	return SDL_SetRenderDrawBlendMode(renderer_.get(), mode) >= 0;
+}
+
+bool Renderer::getDrawBlendMode(SDL_BlendMode *mode) const
+{
+	return SDL_GetRenderDrawBlendMode(renderer_.get(), mode) >= 0;
 }
 
 bool Renderer::drawPoint(int x, int y) const

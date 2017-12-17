@@ -20,6 +20,7 @@
 */
 
 #include <SDL.h>
+#include <SDL_image.h>
 #include "window.hpp"
 #include "renderer.hpp"
 #include "texture.hpp"
@@ -42,21 +43,43 @@ void quit()
 	SDL_Quit();
 }
 
+const char *imgName = "image.jpg";
+const double angleStep = 10.0;
+
+inline void parseKey(SDL_Keycode key, double &angle, SDL_RendererFlip &flip)
+{
+	switch(key) {
+	case SDLK_MINUS:
+		angle += angleStep;
+	break;
+	case SDLK_EQUALS:
+		angle -= angleStep;
+	break;
+	case SDLK_0:
+		angle = 0.0;
+	break;
+	case SDLK_h:
+		flip = static_cast<SDL_RendererFlip>(flip ^ SDL_FLIP_HORIZONTAL);
+	break;
+	case SDLK_v:
+		flip = static_cast<SDL_RendererFlip>(flip ^ SDL_FLIP_VERTICAL);
+	break;
+	case SDLK_n:
+		flip = SDL_FLIP_NONE;
+	break;
+	}
+}
+
 void gameLoop()
 {
 	Window window("test");
 	const int windowWidth = window.getWidth();
 	const int windowHeight = window.getHeight();
 
-	// get first supported format
-	SDL_RendererInfo info;
-	window.renderer.getInfo(&info);
-	Uint32 format = *(info.texture_formats);
-	SDL_Log("texture format: %s", SDL_GetPixelFormatName(format));
-	const int textureWidth = 100;
-	const int textureHeight = 100;
-	Texture streamTexture = window.renderer.makeTexture(format,
-		SDL_TEXTUREACCESS_STREAMING, textureWidth, textureHeight);
+	Texture texture = window.renderer.makeTexture(imgName);
+	double angle = 0.0;
+	SDL_Point center{windowWidth / 2, windowHeight / 2};
+	SDL_RendererFlip flip = SDL_FLIP_NONE;
 
 	bool quit = false;
 	while(!quit) {
@@ -64,48 +87,16 @@ void gameLoop()
 		while(SDL_PollEvent(&e)) {
 			if(e.type == SDL_QUIT) {
 				quit = true;
+			} else if(e.type == SDL_KEYDOWN) {
+				parseKey(e.key.keysym.sym, angle, flip);
 			}
 		}
 
-		window.renderer.setDrawColor(0, 0, 0, 0xff);
+		window.renderer.setDrawColor(0xff, 0xff, 0xff, 0xff);
 		window.renderer.clear();
 
-		int pitch;
-		void *lockedPixels;
-		const int lockedWidth = textureWidth;
-		const int lockedHeight = textureHeight;
-		const SDL_Rect lockArea{0, 0, lockedWidth, lockedHeight};
-
-		bool locked = streamTexture.lock(&lockArea, &lockedPixels,
-			&pitch);
-		if(!locked) {
-			SDL_Log("couldn't lock texture: %s\n", SDL_GetError());
-			quit = true;
-		}
-
-		int row = rand() % textureHeight;
-		int col = rand() % textureWidth;
-		int pixelSize = pitch / textureWidth; // in bytes
-		for(int i = 0; i < pixelSize; i++) {
-			// "reinterpret_cast [...] is purely a compiler
-			// directive which instructs the compiler to treat the
-			// sequence of bits (object representation) of
-			// expression as if it had the type new_type"
-			// <en.cppreference.com/w/cpp/language/reinterpret_cast>
-			// So yes, reinterpret_cast keeps the pointer's value
-			unsigned char *bytePtr =
-				reinterpret_cast<unsigned char*>(lockedPixels)
-				+ row * pitch + col * pixelSize + i;
-			// what color this gives might depend on the texture's
-			// format; it's white with RGB(A)
-			*bytePtr = 0xff;
-		}
-
-		streamTexture.unlock();
-
-		window.renderer.render(streamTexture,
-			(windowWidth - textureWidth) / 2,
-			(windowHeight - textureHeight) / 2);
+		window.renderer.render(texture, NULL, NULL, angle, &center,
+			flip);
 
 		window.renderer.present();
 	}

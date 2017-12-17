@@ -8,8 +8,8 @@ LDLIBS = -lSDL2
 
 TESTOBJ = main.o
 SRCDIR = $(SCC_ROOT_DIR)/src
-OBJ = window.o renderer.o texture.o
-BIN = renderPrimitive
+OBJ = window.o renderer.o texture.o rwops.o
+BIN = scaling
 
 $(BIN) : $(OBJ) $(TESTOBJ)
 	$(CXX) -o $(BIN) $^ $(LDLIBS)
@@ -21,7 +21,7 @@ $(OBJ) :
 	$(MAKE) -C $(SRCDIR) $@
 	mv $(addprefix $(SRCDIR)/, $@) ./
 
-clean:
+clean :
 	rm -f $(TESTOBJ) $(OBJ)
 
 .PHONY: clean

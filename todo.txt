@@ -1,8 +1,9 @@
 ==== NOW =====
-Renderer stuff (viewports, alpha modulation, blend mode...)
+Texture color mod, alpha mod, blend mode
 Multiple Window support
+	What happens if we render a texture with a different renderer than the
+	one it was created with?
 
 ==== LATER ====
-Texture clips
 OpenGL stuff
 SDL_mixer sound effects stuff

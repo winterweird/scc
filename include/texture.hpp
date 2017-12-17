@@ -35,6 +35,7 @@ class Renderer;
 
 class Texture {
 	friend class Renderer;
+	// TODO: color mod, alpha mod, blend mode
 public:
 	// The ctors are meant to be called from Renderer's makeTexture().
 

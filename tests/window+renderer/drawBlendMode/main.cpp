@@ -22,6 +22,7 @@
 #include <SDL.h>
 #include "config.hpp"
 #include "window.hpp"
+using SDL::Window;
 
 const int ERR_SDL_INIT = -1;
 
@@ -35,28 +36,46 @@ void quit()
 	SDL_Quit();
 }
 
+const Uint8 alphaStep = 0x10;
+
+inline void parseKey(SDL_Keycode key, Uint8 &alpha)
+{
+	switch(key) {
+	case SDLK_MINUS:
+		alpha -= alphaStep;
+	break;
+	case SDLK_EQUALS:
+		alpha += alphaStep;
+	break;
+	}
+}
+
 void gameLoop()
 {
-	SDL::Window window("test");
-	SDL_Log("window width: %d", window.getWidth());
-	SDL_Log("window height: %d", window.getHeight());
+	Window window("test");
+	const int windowWidth = window.getWidth();
+	const int windowHeight = window.getHeight();
+	const SDL_Rect rect{windowWidth / 4, windowHeight / 4,
+		windowWidth / 2, windowHeight / 2};
 
-	int outputWidth, outputHeight;
-	window.renderer.getOutputSize(&outputWidth, &outputHeight);
-	SDL_Log("renderer output width: %d", outputWidth);
-	SDL_Log("renderer output height: %d", outputHeight);
-
-	window.renderer.setDrawColor(0, 0, 0, 255); // black
-
+	Uint8 alpha = 0xff;
 	bool quit = false;
 	while(!quit) {
 		SDL_Event e;
 		while(SDL_PollEvent(&e)) {
 			if(e.type == SDL_QUIT) {
 				quit = true;
+			} else if(e.type == SDL_KEYDOWN) {
+				parseKey(e.key.keysym.sym, alpha);
 			}
 		}
+		window.renderer.setDrawColor(0xff, 0xff, 0xff, 0xff);
 		window.renderer.clear();
+
+		window.renderer.setDrawBlendMode(SDL_BLENDMODE_BLEND);
+		window.renderer.setDrawColor(0x00, 0x00, 0x00, alpha);
+		window.renderer.fillRect(&rect);
+
 		window.renderer.present();
 	}
 }
