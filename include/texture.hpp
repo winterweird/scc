@@ -35,7 +35,6 @@ class Renderer;
 
 class Texture {
 	friend class Renderer;
-	// TODO: color mod, alpha mod, blend mode
 public:
 	// The ctors are meant to be called from Renderer's makeTexture().
 
@@ -71,6 +70,15 @@ public:
 	// meaningful; you're supposed to write to it, not to read from it.
 	bool lock(const SDL_Rect *rect, void **pixels, int *pitch);
 	void unlock();
+
+	bool setColorMod(Uint8 r, Uint8 g, Uint8 b);
+	bool getColorMod(Uint8 *r, Uint8 *g, Uint8 *b);
+
+	bool setAlphaMod(Uint8 alpha);
+	bool getAlphaMod(Uint8 *alpha);
+
+	bool setBlendMode(SDL_BlendMode blendMode);
+	bool getBlendMode(SDL_BlendMode *blendMode);
 
 	Texture(const Texture &that) = delete;
 	Texture(Texture &&that) = default;

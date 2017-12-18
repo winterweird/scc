@@ -124,3 +124,33 @@ void Texture::unlock()
 {
 	SDL_UnlockTexture(texture_.get());
 }
+
+bool Texture::setColorMod(Uint8 r, Uint8 g, Uint8 b)
+{
+	return SDL_SetTextureColorMod(texture_.get(), r, g, b) >= 0;
+}
+
+bool Texture::getColorMod(Uint8 *r, Uint8 *g, Uint8 *b)
+{
+	return SDL_GetTextureColorMod(texture_.get(), r, g, b) >= 0;
+}
+
+bool Texture::setAlphaMod(Uint8 alpha)
+{
+	return SDL_SetTextureAlphaMod(texture_.get(), alpha) >= 0;
+}
+
+bool Texture::getAlphaMod(Uint8 *alpha)
+{
+	return SDL_GetTextureAlphaMod(texture_.get(), alpha) >= 0;
+}
+
+bool Texture::setBlendMode(SDL_BlendMode blendMode)
+{
+	return SDL_SetTextureBlendMode(texture_.get(), blendMode) >= 0;
+}
+
+bool Texture::getBlendMode(SDL_BlendMode *blendMode)
+{
+	return SDL_GetTextureBlendMode(texture_.get(), blendMode) >= 0;
+}
