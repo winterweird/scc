@@ -56,7 +56,8 @@ inline void parseKey(SDL_Keycode key, Uint16 mod, Texture &texture)
 	texture.getColorMod(&r, &g, &b);
 	texture.getAlphaMod(&a);
 	// this isn't really needed, but it's a good failsafe: if we set
-	// blendModeChanged incorrectly, it will be changed to the previous mode
+	// blendModeChanged incorrectly, the blend mode will be changed to the
+	// previous one
 	texture.getBlendMode(&blendMode);
 
 	switch(key) {
@@ -162,14 +163,6 @@ void gameLoop()
 
 		window.renderer.setDrawColor(0, 0, 0, 0xff);
 		window.renderer.clear();
-
-		// FIXME: the MOD blend mode only gives a few RGB spots, because
-		// of the formula: dstRGB = srcRGB * dstRGB
-		// ...and because both texture's backgrounds are black (r=g=b=0)
-		// and have very little intersection in some white parts. Maybe
-		// the ideal background would be colored with horizontal
-		// stripes corresponding to each word, each stripe with a
-		// different color than its word (to see the color modulation)
 
 		window.renderer.render(background);
 		window.renderer.render(foreground);
