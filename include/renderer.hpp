@@ -56,7 +56,9 @@ public:
 	bool setDrawColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a = 0xff);
 	bool getDrawColor(Uint8 *r, Uint8 *g, Uint8 *b, Uint8 *a) const;
 
-	// Remember you need to call present() when you're done rendering!
+	// Remember:
+	// - you can only render a texture with the renderer that created it
+	// - you need to call present() when you're done rendering!
 
 	// renders a part or the entire texture with its own width and height,
 	// using SDL_RenderCopy().
