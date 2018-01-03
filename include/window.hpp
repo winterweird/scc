@@ -29,7 +29,7 @@
 namespace SDL {
 
 class Window {
-	// TODO: hide window, fullscreen, close window...
+	// TODO SDL_CreateWindowFrom
 public:
 	static const int DEFAULT_WIDTH = 800;
 	static const int DEFAULT_HEIGHT = 600;
@@ -50,21 +50,43 @@ public:
 		Uint32 flags = DEFAULT_INIT_FLAGS,
 		Uint32 rendererFlags = Renderer::DEFAULT_INIT_FLAGS);
 
+	// SDL_GetWindowSize(). You may pass NULL as a parameter if you're not
+	// interested in its value, though you can also use getWidth() or
+	// getHeight() in that case
+	void getSize(int *width, int *height) const;
+
+	// wrappers around SDL_GetWindowSize(), but they return the value.
+	int getWidth() const;
+	int getHeight() const;
+
+	Uint32 getID() { return SDL_GetWindowID(window_.get()); }
+	Uint32 getFlags() { return SDL_GetWindowFlags(window_.get()); }
+
+	void setTitle(const char *title)
+	{
+		SDL_SetWindowTitle(window_.get(), title);
+	}
+	const char *getTitle() { return SDL_GetWindowTitle(window_.get()); }
+
+	void show() { SDL_ShowWindow(window_.get()); }
+	void hide() { SDL_HideWindow(window_.get()); }
+
+	void raise() { SDL_RaiseWindow(window_.get()); }
+
+	void maximize() { SDL_MaximizeWindow(window_.get()); }
+	void minimize() { SDL_MinimizeWindow(window_.get()); }
+	void restore() { SDL_RestoreWindow(window_.get()); }
+	bool setFullscreen(Uint32 flags)
+	{
+		return SDL_SetWindowFullscreen(window_.get(), flags) >= 0;
+	}
+
 	// I don't think SDL has any way of copying windows...
 	Window(const Window &that) = delete;
 	Window(Window &&that) = default;
 	~Window() = default;
 	Window & operator=(Window that);
 	friend void swap(Window &first, Window &second) noexcept;
-
-	// SDL_GetWindowSize. You may pass NULL as a parameter if you're not
-	// interested in its value, though you can also use getWidth() or
-	// getHeight() in that case
-	void getSize(int *width, int *height) const;
-
-	// wrappers around SDL_GetWindowSize, but they return the value.
-	int getWidth() const;
-	int getHeight() const;
 
 	struct Deleter {
 		void operator()(SDL_Window *window)
