@@ -27,11 +27,7 @@ int main(int argc, char **argv)
 {
 	std::cout << "SDL version: " << SDL_MAJOR_VERSION << '.'
 		<< SDL_MINOR_VERSION << '.' << SDL_PATCHLEVEL << std::endl
-		<< "Config macros defined: " << std::endl;
-
-#ifdef SCC_OVERRIDE_HAVE_MACROS
-	std::cout << "SCC_OVERRIDE_HAVE_MACROS" << std::endl;
-#endif
+		<< "HAVE macros defined: " << std::endl;
 
 #ifdef HAVE_SDL_IMAGE
 	std::cout << "HAVE_SDL_IMAGE" << std::endl;

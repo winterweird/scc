@@ -21,7 +21,6 @@
 
 // config.hpp: configure available libs and make preliminary checks.
 // Make sure to include SDL.h before this!
-//
 #ifndef SCC_CONFIG_HPP
 #define SCC_CONFIG_HPP
 
@@ -43,11 +42,13 @@
 # error "at least SDL 2.0 is needed."
 #endif
 
-// use this override to define the HAVE* macros from command line
-#ifndef SCC_OVERRIDE_HAVE_MACROS
-# define HAVE_SDL_IMAGE
-# define HAVE_SDL_TTF
-# define HAVE_SDL_MIXER
-#endif
+// if you want one of these libs, uncomment its macro's respective define or
+// use a command line option to define it.
+// Note: the tests'  makefiles require these to be defined in SCC_HAVE_FLAGS
+// make variable, even if they are defined here. See makefile.tests.
+//
+//#define HAVE_SDL_IMAGE
+//#define HAVE_SDL_TTF
+//#define HAVE_SDL_MIXER
 
 #endif // SCC_CONFIG_HPP
