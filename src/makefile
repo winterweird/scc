@@ -1,12 +1,8 @@
-# we expect the override flags to be defined and exported to us by the makefile
-# above. If this is the toplevel make, we use the default: not overriding.
-ifeq (${MAKELEVEL}, 0)
-SCC_OVERRIDE_FLAGS =
-endif
+SCC_ROOT_DIR = ..
+include $(SCC_ROOT_DIR)/makefile.common
 
-CXX = g++
-CXXFLAGS = -I/usr/include/SDL2 -I../include -std=c++11 $(DEBUG) \
-	$(SCC_OVERRIDE_FLAGS)
+CXXFLAGS = -I$(SDL_INCLUDE_DIR) -I../include -std=c++11 $(DEBUG) \
+	$(SCC_HAVE_FLAGS)
 
 OBJ := $(patsubst %.cpp,%.o,$(wildcard *.cpp))
 

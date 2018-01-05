@@ -1,0 +1,39 @@
+# common rules for all tests. The makefile that includes this must define
+# SCC_ROOT_DIR, SCC_HAVE_FLAGS, TESTOBJ, OBJ and BIN.
+
+# for the make call in OBJ rule
+export SCC_HAVE_FLAGS
+
+include $(SCC_ROOT_DIR)/makefile.common
+SRCDIR := $(SCC_ROOT_DIR)/src
+
+LDFLAGS += -L$(SDL_LIB_DIR)
+LDLIBS += -lSDL2
+
+ifneq (,$(findstring -DHAVE_SDL_IMAGE, $(SCC_HAVE_FLAGS)))
+    LDLIBS += -lSDL2_image
+endif
+ifneq (,$(findstring -DHAVE_SDL_MIXER, $(SCC_HAVE_FLAGS)))
+    LDLIBS += -lSDL2_mixer
+endif
+ifneq (,$(findstring -DHAVE_SDL_TTF, $(SCC_HAVE_FLAGS)))
+    LDLIBS += -lSDL2_ttf
+endif
+
+CXXFLAGS += -I$(SDL_INCLUDE_DIR) -I$(SCC_ROOT_DIR)/include -g -std=c++11 \
+	$(SCC_HAVE_FLAGS)
+
+$(BIN) : $(OBJ) $(TESTOBJ)
+	$(CXX) -o $(BIN) $^ $(LDFLAGS) $(LDLIBS)
+
+$(TESTOBJ) : $(TESTOBJ:.o=.cpp)
+	$(CXX) -c -o $@ $^ $(CXXFLAGS)
+
+$(OBJ) :
+	$(MAKE) -C $(SRCDIR) $@
+	mv $(addprefix $(SRCDIR)/, $@) $(CURDIR)
+
+clean:
+	rm -f $(TESTOBJ) $(OBJ)
+
+.PHONY: clean

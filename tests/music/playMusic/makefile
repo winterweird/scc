@@ -1,13 +1,15 @@
+# FIXME change this mess to use makefile.tests
+
 SCC_ROOT_DIR = ../../..
-SCC_OVERRIDE_FLAGS = -DSCC_OVERRIDE_HAVE_MACROS -DHAVE_SDL_MIXER
-export SCC_OVERRIDE_FLAGS
+SCC_HAVE_FLAGS = -DHAVE_SDL_MIXER
+export SCC_HAVE_FLAGS
 
 DEBUG = -g
 export DEBUG
 
 CXX = g++
-CXXFLAGS = -I/usr/include/SDL2 -I$(SCC_ROOT_DIR)/include $(DEBUG) -std=c++11 \
-	$(SCC_OVERRIDE_FLAGS)
+CXXFLAGS = -I/usr/local/include/SDL2 -I$(SCC_ROOT_DIR)/include $(DEBUG) -std=c++11 \
+	$(SCC_HAVE_FLAGS)
 LDLIBS = -lSDL2 -lSDL2_mixer
 
 TESTOBJ_COMMON = common.o
@@ -17,7 +19,7 @@ TESTOBJ_MP3 = mp3.o
 TESTOBJ_FLAC = flac.o
 
 SRCDIR = $(SCC_ROOT_DIR)/src
-OBJ = music.o
+OBJ = music.o rwops.o
 
 BIN_OGG = playOgg
 BIN_MIDI = playMidi

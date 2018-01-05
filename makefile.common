@@ -1,0 +1,4 @@
+# common definitions that do not rely on other definitions or relative paths
+CXX := g++
+SDL_INCLUDE_DIR := /usr/local/include/SDL2
+SDL_LIB_DIR := /usr/local/lib
