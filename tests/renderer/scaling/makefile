@@ -1,5 +1,5 @@
 SCC_ROOT_DIR := ../../..
-SCC_OVERRIDE_FLAGS :=
+SCC_HAVE_FLAGS :=
 
 TESTOBJ := main.o
 OBJ := window.o renderer.o texture.o
