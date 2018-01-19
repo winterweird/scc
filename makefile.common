@@ -1,4 +1,5 @@
-# common definitions that do not rely on other definitions or relative paths
+# common definitions that do not rely on other definitions or relative paths.
+# Change these to match your system.
 CXX := g++
-SDL_INCLUDE_DIR := /usr/local/include/SDL2
-SDL_LIB_DIR := /usr/local/lib
+SDL_INCLUDE_DIR := /usr/include/SDL2
+SDL_LIB_DIR := /usr/lib/x86_64-linux-gnu
