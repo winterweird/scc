@@ -1,14 +1,13 @@
 # common rules for all tests. The makefile that includes this must define
 # SCC_ROOT_DIR, SCC_HAVE_FLAGS, TESTOBJ, OBJ and BIN.
 
-# for the make call in OBJ rule
-export SCC_HAVE_FLAGS
-
 include $(SCC_ROOT_DIR)/makefile.common
 SRCDIR := $(SCC_ROOT_DIR)/src
 
+# SDL libraries
 LDFLAGS += -L$(SDL_LIB_DIR)
 LDLIBS += -lSDL2
+INCLUDE_DIRS += -I$(SDL_INCLUDE_DIR) -I$(SCC_ROOT_DIR)/include
 
 ifneq (,$(findstring -DHAVE_SDL_IMAGE, $(SCC_HAVE_FLAGS)))
     LDLIBS += -lSDL2_image
@@ -20,7 +19,26 @@ ifneq (,$(findstring -DHAVE_SDL_TTF, $(SCC_HAVE_FLAGS)))
     LDLIBS += -lSDL2_ttf
 endif
 
-CXXFLAGS += -I$(SDL_INCLUDE_DIR) -I$(SCC_ROOT_DIR)/include -g -std=c++11 \
+# openGL libraries
+ifneq (,$(HAVE_GL))
+    LDFLAGS += -L$(GL_LIB_DIR)
+    LDLIBS += -lGL
+    EXTRA_INCLUDE_DIRS += -I$(GL_INCLUDE_DIR)
+endif
+ifneq (,$(HAVE_GLEW))
+    LDFLAGS += -L$(GLEW_LIB_DIR)
+    LDLIBS += -lGLEW
+    EXTRA_INCLUDE_DIRS += -I$(GLEW_INCLUDE_DIR)
+endif
+
+DEBUG = -g
+
+# for the make call in OBJ rule
+export SCC_HAVE_FLAGS
+export EXTRA_INCLUDE_DIRS
+export DEBUG
+
+CXXFLAGS := $(INCLUDE_DIRS) $(EXTRA_INCLUDE_DIRS) $(DEBUG) -std=c++11 \
 	$(SCC_HAVE_FLAGS)
 
 $(BIN) : $(OBJ) $(TESTOBJ)

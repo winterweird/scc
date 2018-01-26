@@ -32,7 +32,8 @@ namespace SDL {
 class Window;
 class Surface;
 
-// This class is meant to live only as a Window member object.
+// warning: it is your responsibility to make sure the Renderer doesn't outlive
+// the Window that created it
 class Renderer {
 public:
 	static const Uint32 DEFAULT_INIT_FLAGS =
@@ -40,10 +41,7 @@ public:
 		| SDL_RENDERER_PRESENTVSYNC
 		| SDL_RENDERER_TARGETTEXTURE;
 
-	Renderer(SDL_Window *window, Uint32 flags);
-
-	// an empty ctor is needed to construct Window. Ugly, but it works.
-	Renderer();
+	Renderer(SDL_Window *window, Uint32 flags = DEFAULT_INIT_FLAGS);
 
 	template <typename ... Args>
 	Texture makeTexture(Args&& ... args)

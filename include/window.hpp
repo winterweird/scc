@@ -25,9 +25,14 @@
 #include <memory>
 #include <SDL.h>
 #include "renderer.hpp"
+#include "glcontext.hpp"
 
 namespace SDL {
 
+// note: to actually draw something to the window, you'll have to choose between
+// - creating a Renderer
+// - creating a GLContext and drawing with OpenGL
+// - blitting to the window's surface (no hardware acceleration) TODO
 class Window {
 	// TODO SDL_CreateWindowFrom
 public:
@@ -35,20 +40,45 @@ public:
 	static const int DEFAULT_HEIGHT = 600;
 	static const Uint32 DEFAULT_INIT_FLAGS = 0;
 
-	// Having Renderer as Window's member object is the easiest way of
-	// ensuring that every Window has 1 and only 1 renderer, and that the
-	// Renderer doesn't outlive its Window.
-	// The downside is that users can't render the old way
-	// (ie, blitting directly to the Window's surface).
-	Renderer renderer;
-
+	// note: the argument order differs from SDL_CreateWindow() to allow
+	// a better use of default values, eg Window("title", 800, 600)
 	Window(const char *title,
 		int width = DEFAULT_WIDTH,
 		int height = DEFAULT_HEIGHT,
 		int x = SDL_WINDOWPOS_UNDEFINED,
 		int y = SDL_WINDOWPOS_UNDEFINED,
-		Uint32 flags = DEFAULT_INIT_FLAGS,
-		Uint32 rendererFlags = Renderer::DEFAULT_INIT_FLAGS);
+		Uint32 flags = DEFAULT_INIT_FLAGS);
+
+	// FIXME should store a reference/pointer to the renderer in this class
+	//
+	// will throw if there's already a Renderer associated with this Window
+	template <typename ... Args>
+	Renderer makeRenderer(Args&& ... args)
+	{
+		return Renderer(window_.get(), std::forward<Args>(args)...);
+	}
+
+	// this not only creates an OpenGL context but also makes it the current context.
+	// will throw if the window wasn't created with the SDL_WINDOW_OPENGL flag.
+	template <typename ... Args>
+	GLContext makeGLContext(Args&& ... args)
+	{
+		return GLContext(window_.get(), std::forward<Args>(args)...);
+	}
+
+	// you might want to call SDL_GL_SetSwapInterval() before using this
+	void swapWindow() { SDL_GL_SwapWindow(window_.get()); }
+
+	bool makeCurrent(GLContext &context)
+	{
+		return makeCurrent(context.context_);
+	}
+	// if you created your context through other means, you can use this
+	// overload instead.
+	bool makeCurrent(SDL_GLContext context)
+	{
+		return SDL_GL_MakeCurrent(window_.get(), context) >= 0;
+	}
 
 	// SDL_GetWindowSize(). You may pass NULL as a parameter if you're not
 	// interested in its value, though you can also use getWidth() or
@@ -58,6 +88,12 @@ public:
 	// wrappers around SDL_GetWindowSize(), but they return the value.
 	int getWidth() const;
 	int getHeight() const;
+
+	// again, you may pass NULL if you don't want a value.
+	void getDrawableSize(int *width, int *height)
+	{
+		SDL_GL_GetDrawableSize(window_.get(), width, height);
+	}
 
 	Uint32 getID() { return SDL_GetWindowID(window_.get()); }
 	Uint32 getFlags() { return SDL_GetWindowFlags(window_.get()); }

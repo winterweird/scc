@@ -21,52 +21,26 @@
 
 #include <memory>
 #include <SDL.h>
-#include "cstylealloc.hpp"
-#include "renderer.hpp"
-#include "window.hpp"
+#include "config.hpp"
+#include "glcontext.hpp"
 
-using SDL::Renderer;
-using SDL::Window;
+using SDL::GLContext;
 
-Window::Window(const char *title, int width, int height, int x, int y,
-	Uint32 flags)
-	: window_{CStyleAlloc<Window::Deleter>::alloc(
-		SDL_CreateWindow, "Making window failed",
-		title, x, y, width, height, flags
-	)}
+GLContext::GLContext() : context_(NULL) {}
+
+GLContext::GLContext(SDL_Window *window) :
+	context_{SDL_GL_CreateContext(window)}
 {}
 
-Window & Window::operator=(Window that)
+GLContext::GLContext(GLContext &&that) : GLContext()
 {
+	// swap the newly-constructed empty object with the rvalue recieved
 	swap(*this, that);
-	return *this;
 }
 
-namespace SDL {
-
-void swap(Window &first, Window &second) noexcept
+GLContext::~GLContext()
 {
-	using std::swap;
-	swap(first.window_, second.window_);
-}
-
-} // namespace SDL
-
-void Window::getSize(int *width, int *height) const
-{
-	SDL_GetWindowSize(window_.get(), width, height);
-}
-
-int Window::getWidth() const
-{
-	int width;
-	SDL_GetWindowSize(window_.get(), &width, NULL);
-	return width;
-}
-
-int Window::getHeight() const
-{
-	int height;
-	SDL_GetWindowSize(window_.get(), NULL, &height);
-	return height;
+	if(context_ != NULL) {
+		SDL_GL_DeleteContext(context_);
+	}
 }

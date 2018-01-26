@@ -30,9 +30,6 @@
 using SDL::Window;
 using SDL::Renderer;
 
-Renderer::Renderer() : renderer_{nullptr}
-{}
-
 Renderer::Renderer(SDL_Window *window, Uint32 flags)
 	: renderer_{CStyleAlloc<Renderer::Deleter>::alloc(SDL_CreateRenderer,
 		"Making renderer failed", window, -1, flags)}

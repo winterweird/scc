@@ -1,5 +1,12 @@
 # common definitions that do not rely on other definitions or relative paths.
 # Change these to match your system.
 CXX := g++
+
 SDL_INCLUDE_DIR := /usr/include/SDL2
 SDL_LIB_DIR := /usr/lib/x86_64-linux-gnu
+
+# you don't need to provide those dirs if you won't use them
+GL_INCLUDE_DIR := /usr/include/GL
+GL_LIB_DIR := /usr/lib/x86_64-linux-gnu
+GLEW_INCLUDE_DIR := /usr/include/GL
+GLEW_LIB_DIR := /usr/lib/x86_64-linux-gnu
