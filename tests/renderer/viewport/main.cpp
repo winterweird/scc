@@ -22,7 +22,13 @@
 #include <SDL.h>
 #include "config.hpp"
 #include "window.hpp"
+#include "renderer.hpp"
+#include "texture.hpp"
+#include "surface.hpp"
 using SDL::Window;
+using SDL::Renderer;
+using SDL::Texture;
+using SDL::Surface;
 
 const int ERR_SDL_INIT = -1;
 
@@ -36,56 +42,50 @@ void quit()
 	SDL_Quit();
 }
 
+const char *bitmapName = "screen.bmp";
+const int bitmapHeight = 800;
+const int bitmapWidth = 600;
+
+void parseKey(const SDL_Keycode &key, bool &useViewport)
+{
+	if(key == SDLK_v) {
+		useViewport = !useViewport;
+	}
+}
+
 void gameLoop()
 {
-	Window window("test");
+	Window window("test", 800, 600);
+	Renderer renderer = window.makeRenderer();
+	Texture texture = renderer.makeTexture(Surface(bitmapName));
+
 	const int windowWidth = window.getWidth();
 	const int windowHeight = window.getHeight();
 	const SDL_Rect screenRect{0, 0, windowWidth, windowHeight};
-
-	const SDL_Rect viewport1{0, 0,
-		windowWidth * 2 / 5, windowHeight * 2 / 5};
-	const SDL_Rect viewport2{windowWidth * 3 / 5, 0,
-		windowWidth * 2 / 5, windowHeight * 3 / 8};
-	const SDL_Rect viewport3{windowWidth * 3 / 5, windowHeight * 3 / 5,
-		windowWidth * 2 / 5, windowHeight * 2 / 5};
-	const SDL_Rect viewport4{0, windowHeight * 3 / 5,
-		windowWidth * 2 / 5, windowHeight * 2 / 5};
+	const SDL_Rect viewport{0, 0, bitmapHeight / 2, bitmapWidth / 2};
 
 	bool quit = false;
+	bool useViewport = true;
 	while(!quit) {
 		SDL_Event e;
 		while(SDL_PollEvent(&e)) {
 			if(e.type == SDL_QUIT) {
 				quit = true;
+			} else if(e.type == SDL_KEYDOWN) {
+				parseKey(e.key.keysym.sym, useViewport);
 			}
 		}
-		window.renderer.setDrawColor(0x00, 0x00, 0x00, 0xff); // black
-		window.renderer.clear();
+		renderer.setDrawColor(0x00, 0x00, 0x00, 0xff); // black
+		renderer.clear();
 
-		// after this, the background color should be red
-		window.renderer.setDrawColor(0xff, 0x00, 0x00, 0xff);
-		window.renderer.setViewport(nullptr);
-		window.renderer.fillRect(&screenRect);
+		if(useViewport) {
+			renderer.setViewport(&viewport);
+		} else {
+			renderer.setViewport(nullptr);
+		}
+		renderer.render(texture, 0, 0);
 
-		window.renderer.setDrawColor(0xff, 0xff, 0xff, 0xff); // white
-
-		// all fillRect() calls below shouldn't fill the whole screen,
-		// but rather only the viewports
-	
-		window.renderer.setViewport(&viewport1);
-		window.renderer.fillRect(&screenRect);
-
-		window.renderer.setViewport(&viewport2);
-		window.renderer.fillRect(&screenRect);
-
-		window.renderer.setViewport(&viewport3);
-		window.renderer.fillRect(&screenRect);
-
-		window.renderer.setViewport(&viewport4);
-		window.renderer.fillRect(&screenRect);
-
-		window.renderer.present();
+		renderer.present();
 	}
 }
 
