@@ -1,6 +1,21 @@
 ==== NOW =====
-OpenGL stuff
+Classes for opengl shaders and objects (VAO, VBO, etc)
+	- make a macro to disable those if user doesn't want them
+	- have to be move-only: see <https://www.khronos.org/opengl/wiki/Common_Mistakes#RAII_and_hidden_destructor_calls>
+
+Store a reference to the Renderer in the Window upon creating it, to ensure
+a functionality similar to SDL_GetRenderer()
+
+Now that Renderer isn't a member of Window anymore, implement old-style render
+Load Surface from non-bitmap image (named constructor idiom)
+
+SDL_GL: bind/unbind texture
+	"You need a renderer to create a SDL_Texture, therefore you can only use
+	this function with an implicit OpenGL context from SDL_CreateRenderer(),
+	not with your own OpenGL context. If you need control over your OpenGL
+	context, you need to write your own texture-loading methods."
+	<https://wiki.libsdl.org/SDL_GL_BindTexture>
 
 ==== LATER ====
-Get the newest version of SDL_mixer to work
+TrueTypeFont should have all the functionailty from SDL_ttf
 SDL_mixer sound effects stuff

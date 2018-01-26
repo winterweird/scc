@@ -22,7 +22,9 @@
 #include <SDL.h>
 #include "config.hpp"
 #include "window.hpp"
+#include "renderer.hpp"
 using SDL::Window;
+using SDL::Renderer;
 
 const int ERR_SDL_INIT = -1;
 
@@ -53,8 +55,9 @@ void gameLoop()
 	Window window("test", Window::DEFAULT_WIDTH, Window::DEFAULT_HEIGHT,
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOW_RESIZABLE);
+	Renderer renderer = window.makeRenderer();
 
-	window.renderer.setDrawColor(0, 0, 0, 255); // black
+	renderer.setDrawColor(0, 0, 0, 255); // black
 
 	bool quit = false;
 	while(!quit) {
@@ -66,8 +69,8 @@ void gameLoop()
 				parseWindowEvent(e, window);
 			}
 		}
-		window.renderer.clear();
-		window.renderer.present();
+		renderer.clear();
+		renderer.present();
 	}
 }
 

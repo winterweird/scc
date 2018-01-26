@@ -25,6 +25,9 @@
 #include "window.hpp"
 #include "renderer.hpp"
 #include "texture.hpp"
+using SDL::Window;
+using SDL::Renderer;
+using SDL::Texture;
 
 const int ERR_SDL_INIT = -1;
 const char *imagePath = "foo.jpg";
@@ -48,11 +51,13 @@ void quit()
 
 void gameLoop()
 {
-	SDL::Window window("test");
+	Window window("test");
+	Renderer renderer = window.makeRenderer();
+
 	int windowWidth = window.getWidth();
 	int windowHeight = window.getHeight();
 
-	SDL::Texture imgTexture = window.renderer.makeTexture(imagePath);
+	Texture imgTexture = renderer.makeTexture(imagePath);
 	int textureWidth = imgTexture.getWidth();
 	int textureHeight = imgTexture.getHeight();
 
@@ -67,14 +72,14 @@ void gameLoop()
 				quit = true;
 			}
 		}
-		window.renderer.setDrawColor(255, 255, 255, 255);
-		window.renderer.clear();
+		renderer.setDrawColor(255, 255, 255, 255);
+		renderer.clear();
 
-		window.renderer.render(imgTexture,
+		renderer.render(imgTexture,
 			(windowWidth - textureWidth) / 2,
 			(windowHeight - textureHeight) / 2);
 
-		window.renderer.present();
+		renderer.present();
 	}
 }
 

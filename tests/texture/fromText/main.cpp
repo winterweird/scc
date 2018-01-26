@@ -26,6 +26,10 @@
 #include "renderer.hpp"
 #include "texture.hpp"
 #include "truetypefont.hpp"
+using SDL::Window;
+using SDL::Renderer;
+using SDL::Texture;
+using SDL::TrueTypeFont;
 
 const int ERR_SDL_INIT = -1;
 
@@ -56,13 +60,15 @@ void quit()
 
 void gameLoop()
 {
-	SDL::Window window("test");
+	Window window("test");
+	Renderer renderer = window.makeRenderer();
+
 	int windowWidth = window.getWidth();
 	int windowHeight = window.getHeight();
 
-	SDL::TrueTypeFont font(fontPath, fontSize);
+	TrueTypeFont font(fontPath, fontSize);
 
-	SDL::Texture lowerTexture = window.renderer.makeTexture(
+	Texture lowerTexture = renderer.makeTexture(
 		"the quick brown fox jumps over the lazy dog",
 		font,
 		SDL_Color{0, 0, 0, 255}
@@ -70,7 +76,7 @@ void gameLoop()
 	int lowerWidth = lowerTexture.getWidth();
 	int lowerHeight = lowerTexture.getHeight();
 
-	SDL::Texture upperTexture = window.renderer.makeTexture(
+	Texture upperTexture = renderer.makeTexture(
 		"THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG",
 		font,
 		SDL_Color{0, 0, 0, 255}
@@ -78,7 +84,7 @@ void gameLoop()
 	int upperWidth = upperTexture.getWidth();
 	int upperHeight = upperTexture.getHeight();
 
-	window.renderer.setDrawColor(255, 255, 255, 255);
+	renderer.setDrawColor(255, 255, 255, 255);
 
 	bool quit = false;
 	while(!quit) {
@@ -88,16 +94,16 @@ void gameLoop()
 				quit = true;
 			}
 		}
-		window.renderer.clear();
+		renderer.clear();
 
-		window.renderer.render(lowerTexture,
+		renderer.render(lowerTexture,
 			(windowWidth - lowerWidth) / 2, 
 			(windowHeight - lowerHeight) / 4);
-		window.renderer.render(upperTexture,
+		renderer.render(upperTexture,
 			(windowWidth - upperWidth) / 2,
 			(windowHeight - upperHeight) * 3/4);
 
-		window.renderer.present();
+		renderer.present();
 	}
 }
 int main(int argc, char **argv)

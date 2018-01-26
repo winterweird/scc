@@ -26,6 +26,7 @@
 #include "texture.hpp"
 
 using SDL::Window;
+using SDL::Renderer;
 using SDL::Texture;
 
 const int ERR_SDL_INIT = -1;
@@ -145,9 +146,10 @@ inline void parseKey(SDL_Keycode key, Uint16 mod, Texture &texture)
 void gameLoop()
 {
 	Window window("test");
+	Renderer renderer = window.makeRenderer();
 
-	Texture background = window.renderer.makeTexture("background.jpg");
-	Texture foreground = window.renderer.makeTexture("foreground.jpg");
+	Texture background = renderer.makeTexture("background.jpg");
+	Texture foreground = renderer.makeTexture("foreground.jpg");
 
 	bool quit = false;
 	while(!quit) {
@@ -161,13 +163,13 @@ void gameLoop()
 			}
 		}
 
-		window.renderer.setDrawColor(0, 0, 0, 0xff);
-		window.renderer.clear();
+		renderer.setDrawColor(0, 0, 0, 0xff);
+		renderer.clear();
 
-		window.renderer.render(background);
-		window.renderer.render(foreground);
+		renderer.render(background);
+		renderer.render(foreground);
 
-		window.renderer.present();
+		renderer.present();
 	}
 }
 

@@ -22,7 +22,9 @@
 #include <SDL.h>
 #include "config.hpp"
 #include "window.hpp"
+#include "renderer.hpp"
 using SDL::Window;
+using SDL::Renderer;
 
 const int ERR_SDL_INIT = -1;
 
@@ -44,11 +46,13 @@ void gameLoop()
 	Window window("test", windowWidth, windowHeight,
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOW_RESIZABLE);
+	Renderer renderer = window.makeRenderer();
+
 	int logicalWidth = 100;
 	int logicalHeight = 100;
 	const SDL_Rect rect{0, 0, windowWidth, windowHeight};
 
-	window.renderer.setLogicalSize(logicalWidth, logicalHeight);
+	renderer.setLogicalSize(logicalWidth, logicalHeight);
 
 	bool quit = false;
 	while(!quit) {
@@ -59,15 +63,15 @@ void gameLoop()
 			} else if(e.type == SDL_KEYDOWN) {
 			}
 		}
-		window.renderer.setDrawColor(0x00, 0x00, 0x00, 0xff);
-		window.renderer.clear();
+		renderer.setDrawColor(0x00, 0x00, 0x00, 0xff);
+		renderer.clear();
 
-		window.renderer.setDrawColor(0xff, 0x00, 0x00, 0xff);
+		renderer.setDrawColor(0xff, 0x00, 0x00, 0xff);
 		// the red portion should always appear as a square, regardless
 		// of the window's dimensions
-		window.renderer.fillRect(&rect);
+		renderer.fillRect(&rect);
 
-		window.renderer.present();
+		renderer.present();
 	}
 }
 

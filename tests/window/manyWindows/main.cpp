@@ -25,7 +25,9 @@
 #include <SDL.h>
 #include "config.hpp"
 #include "window.hpp"
+#include "renderer.hpp"
 using SDL::Window;
+using SDL::Renderer;
 
 const int ERR_SDL_INIT = -1;
 
@@ -153,6 +155,15 @@ void parseKeyEvent(SDL_KeyboardEvent &ke, std::list<Window> &windows)
 	}
 }
 
+// windows' background colors.
+// If there are more windows than colors, this will be looped over.
+const Uint8 colors[][4] = {
+	{0xff, 0x00, 0x00, 0xff}, // red
+	{0x00, 0xff, 0x00, 0xff}, // green
+	{0x00, 0x00, 0xff, 0xff}, // blue
+};
+constexpr size_t numColors = sizeof(colors) / sizeof(colors[0]);
+
 void gameLoop()
 {
 	std::list<Window> windows;
@@ -169,19 +180,22 @@ void gameLoop()
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOW_RESIZABLE));
 
-	{
-		decltype(windows.begin()) window1, window2, window3;
-		window1 = window2 = window3 = windows.begin();
-		// ugly, indeed.
-		window2++;
-		window3++; window3++;
+	std::list<Renderer> renderers;
+	for(auto &window : windows) {
+		renderers.push_back(window.makeRenderer());
+	}
 
-		SDL_Log("window IDs: first = %d, second = %d, third = %d\n",
-			window1->getID(), window2->getID(), window3->getID());
+	SDL_Log("window IDs:\n");
+	for(auto &window : windows) {
+		SDL_Log("%s: %d", window.getTitle(), window.getID());
+	}
 
-		window1->renderer.setDrawColor(0xff, 0x00, 0x00, 0xff); // red
-		window2->renderer.setDrawColor(0x00, 0xff, 0x00, 0xff); // green
-		window3->renderer.setDrawColor(0x00, 0x00, 0xff, 0xff); // blue
+	int i = 0;
+	for(auto &renderer : renderers) {
+		renderer.setDrawColor(colors[i][0], colors[i][1],
+			colors[i][2], colors[i][3]);
+		i++;
+		i %= numColors;
 	}
 
 	bool quit = false;
@@ -198,9 +212,9 @@ void gameLoop()
 				parseKeyEvent(e.key, windows);
 			}
 		}
-		for(auto &it : windows) {
-			it.renderer.clear();
-			it.renderer.present();
+		for(auto &renderer : renderers) {
+			renderer.clear();
+			renderer.present();
 		}
 	}
 }

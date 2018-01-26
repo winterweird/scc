@@ -26,6 +26,7 @@
 #include "texture.hpp"
 
 using SDL::Window;
+using SDL::Renderer;
 using SDL::Texture;
 
 const int ERR_SDL_INIT = -1;
@@ -73,10 +74,12 @@ inline void parseKey(SDL_Keycode key, double &angle, SDL_RendererFlip &flip)
 void gameLoop()
 {
 	Window window("test");
+	Renderer renderer = window.makeRenderer();
+
 	const int windowWidth = window.getWidth();
 	const int windowHeight = window.getHeight();
 
-	Texture texture = window.renderer.makeTexture(imgName);
+	Texture texture = renderer.makeTexture(imgName);
 	double angle = 0.0;
 	SDL_Point center{windowWidth / 2, windowHeight / 2};
 	SDL_RendererFlip flip = SDL_FLIP_NONE;
@@ -92,13 +95,12 @@ void gameLoop()
 			}
 		}
 
-		window.renderer.setDrawColor(0xff, 0xff, 0xff, 0xff);
-		window.renderer.clear();
+		renderer.setDrawColor(0xff, 0xff, 0xff, 0xff);
+		renderer.clear();
 
-		window.renderer.render(texture, NULL, NULL, angle, &center,
-			flip);
+		renderer.render(texture, NULL, NULL, angle, &center, flip);
 
-		window.renderer.present();
+		renderer.present();
 	}
 }
 

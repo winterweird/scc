@@ -22,7 +22,9 @@
 #include <SDL.h>
 #include "config.hpp"
 #include "window.hpp"
+#include "renderer.hpp"
 using SDL::Window;
+using SDL::Renderer;
 
 const int ERR_SDL_INIT = -1;
 
@@ -48,7 +50,7 @@ inline void updateScale(float &xScale, float &yScale,
 		static_cast<float>(fixedHeight);
 }
 
-inline void updateSize(const SDL_Event &e, Window &window, int &windowWidth,
+inline void updateSize(const SDL_Event &e, Renderer &renderer, int &windowWidth,
 	int &windowHeight, float &xScale, float &yScale)
 {
 	float xScaleGot, yScaleGot;
@@ -58,8 +60,8 @@ inline void updateSize(const SDL_Event &e, Window &window, int &windowWidth,
 
 		updateScale(xScale, yScale, windowWidth, windowHeight);
 
-		window.renderer.setScale(xScale, yScale);
-		window.renderer.getScale(&xScaleGot, &yScaleGot);
+		renderer.setScale(xScale, yScale);
+		renderer.getScale(&xScaleGot, &yScaleGot);
 
 		SDL_Log("scale set: x = %f, y = %f", xScale, yScale);
 		SDL_Log("scale got: x = %f, y = %f", xScaleGot, yScaleGot);
@@ -73,6 +75,7 @@ void gameLoop()
 	Window window("test", windowWidth, windowHeight,
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOW_RESIZABLE);
+	Renderer renderer = window.makeRenderer();
 
 	const SDL_Rect rect{fixedWidth / 2 - fixedWidth / 8,
 		fixedHeight / 2 - fixedHeight / 8,
@@ -82,7 +85,7 @@ void gameLoop()
 	float xScale;
 	float yScale;
 	updateScale(xScale, yScale, windowWidth, windowHeight);
-	window.renderer.setScale(xScale, yScale);
+	renderer.setScale(xScale, yScale);
 
 	bool quit = false;
 	while(!quit) {
@@ -91,17 +94,17 @@ void gameLoop()
 			if(e.type == SDL_QUIT) {
 				quit = true;
 			} else if(e.type == SDL_WINDOWEVENT) {
-				updateSize(e, window, windowWidth, windowHeight,
+				updateSize(e, renderer, windowWidth, windowHeight,
 					xScale, yScale);
 			}
 		}
-		window.renderer.setDrawColor(0x00, 0x00, 0x00, 0xff);
-		window.renderer.clear();
+		renderer.setDrawColor(0x00, 0x00, 0x00, 0xff);
+		renderer.clear();
 
-		window.renderer.setDrawColor(0xff, 0xff, 0xff, 0xff);
-		window.renderer.fillRect(&rect);
+		renderer.setDrawColor(0xff, 0xff, 0xff, 0xff);
+		renderer.fillRect(&rect);
 
-		window.renderer.present();
+		renderer.present();
 	}
 }
 

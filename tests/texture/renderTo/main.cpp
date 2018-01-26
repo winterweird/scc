@@ -25,6 +25,7 @@
 #include "texture.hpp"
 
 using SDL::Window;
+using SDL::Renderer;
 using SDL::Texture;
 
 const int ERR_SDL_INIT = -1;
@@ -48,19 +49,19 @@ void gameLoop()
 		| SDL_RENDERER_PRESENTVSYNC
 		| SDL_RENDERER_TARGETTEXTURE;
 
-	Window window("test", Window::DEFAULT_WIDTH, Window::DEFAULT_HEIGHT,
-		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-		Window::DEFAULT_INIT_FLAGS, rendererFlags);
+	Window window("test");
+	Renderer renderer = window.makeRenderer(rendererFlags);
+
 	const int windowWidth = window.getWidth();
 	const int windowHeight = window.getHeight();
 
 	// get first supported format
 	SDL_RendererInfo info;
-	window.renderer.getInfo(&info);
+	renderer.getInfo(&info);
 	Uint32 format = *(info.texture_formats);
 	const int textureWidth = 100;
 	const int textureHeight = 100;
-	Texture targetTexture = window.renderer.makeTexture(format,
+	Texture targetTexture = renderer.makeTexture(format,
 		SDL_TEXTUREACCESS_TARGET, textureWidth, textureHeight);
 
 	bool quit = false;
@@ -72,26 +73,26 @@ void gameLoop()
 			}
 		}
 
-		window.renderer.setDrawColor(0, 0, 0, 0xff);
-		window.renderer.clear();
+		renderer.setDrawColor(0, 0, 0, 0xff);
+		renderer.clear();
 
-		bool targetIsSet = window.renderer.setTarget(targetTexture);
+		bool targetIsSet = renderer.setTarget(targetTexture);
 		if(!targetIsSet) {
 			SDL_Log("setTarget doesn't work: %s", SDL_GetError());
 			break;
 		}
-		window.renderer.setDrawColor(0xff, 0xff, 0xff, 0xff);
-		window.renderer.drawLine(textureWidth / 2, 0,
+		renderer.setDrawColor(0xff, 0xff, 0xff, 0xff);
+		renderer.drawLine(textureWidth / 2, 0,
 			textureWidth / 2, 100);
-		window.renderer.drawLine(0, textureHeight / 2,
+		renderer.drawLine(0, textureHeight / 2,
 			100, textureHeight / 2);
 
-		window.renderer.setTarget(nullptr);
-		window.renderer.render(targetTexture,
+		renderer.setTarget(nullptr);
+		renderer.render(targetTexture,
 			(windowWidth - textureWidth) / 2,
 			(windowHeight - textureHeight) / 2);
 
-		window.renderer.present();
+		renderer.present();
 	}
 }
 

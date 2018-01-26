@@ -22,7 +22,9 @@
 #include <SDL.h>
 #include "config.hpp"
 #include "window.hpp"
+#include "renderer.hpp"
 using SDL::Window;
+using SDL::Renderer;
 
 const int ERR_SDL_INIT = -1;
 
@@ -53,6 +55,8 @@ inline void parseKey(SDL_Keycode key, Uint8 &alpha)
 void gameLoop()
 {
 	Window window("test");
+	Renderer renderer = window.makeRenderer();
+
 	const int windowWidth = window.getWidth();
 	const int windowHeight = window.getHeight();
 	const SDL_Rect rect{windowWidth / 4, windowHeight / 4,
@@ -69,14 +73,14 @@ void gameLoop()
 				parseKey(e.key.keysym.sym, alpha);
 			}
 		}
-		window.renderer.setDrawColor(0xff, 0xff, 0xff, 0xff);
-		window.renderer.clear();
+		renderer.setDrawColor(0xff, 0xff, 0xff, 0xff);
+		renderer.clear();
 
-		window.renderer.setDrawBlendMode(SDL_BLENDMODE_BLEND);
-		window.renderer.setDrawColor(0x00, 0x00, 0x00, alpha);
-		window.renderer.fillRect(&rect);
+		renderer.setDrawBlendMode(SDL_BLENDMODE_BLEND);
+		renderer.setDrawColor(0x00, 0x00, 0x00, alpha);
+		renderer.fillRect(&rect);
 
-		window.renderer.present();
+		renderer.present();
 	}
 }
 
