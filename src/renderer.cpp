@@ -26,14 +26,17 @@
 #include "cstylealloc.hpp"
 #include "window.hpp"
 #include "renderer.hpp"
-
 using SDL::Window;
 using SDL::Renderer;
 
 Renderer::Renderer(SDL_Window *window, Uint32 flags)
 	: renderer_{CStyleAlloc<Renderer::Deleter>::alloc(SDL_CreateRenderer,
-		"Making renderer failed", window, -1, flags)}
-{}
+		"Making renderer failed", window, -1, flags)},
+	thisptr_{nullptr}
+{
+	// empty dtor is used because we didn't allocate this
+	thisptr_ = std::shared_ptr<Renderer>(this, [](Renderer *renderer) {});
+}
 
 Renderer & Renderer::operator=(Renderer that)
 {

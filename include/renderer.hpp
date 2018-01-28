@@ -116,6 +116,13 @@ public:
 	// TODO readPixels(), updateTexture(), setClip(), getClip(),
 	// isClipEnabled()
 
+	// gives a weak_ptr to itself.
+	// The weak_ptr will expire when this object is destroyed.
+	std::weak_ptr<Renderer> getWeakPtr()
+	{
+		return std::weak_ptr<Renderer>(thisptr_);
+	}
+
 	// renderers must NOT be copied. They belong to 1 window only.
 	Renderer(const Renderer &that) = delete;
 	Renderer(Renderer &&that) = default; // moving is fine though
@@ -131,6 +138,7 @@ public:
 	};
 private:
 	std::unique_ptr<SDL_Renderer, Deleter> renderer_;
+	std::shared_ptr<Renderer> thisptr_; // stores *this
 };
 
 } // namespace SDL

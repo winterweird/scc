@@ -3,9 +3,6 @@ Classes for opengl shaders and objects (VAO, VBO, etc)
 	- make a macro to disable those if user doesn't want them
 	- have to be move-only: see <https://www.khronos.org/opengl/wiki/Common_Mistakes#RAII_and_hidden_destructor_calls>
 
-Store a reference to the Renderer in the Window upon creating it, to ensure
-a functionality similar to SDL_GetRenderer()
-
 Now that Renderer isn't a member of Window anymore, implement old-style render
 Load Surface from non-bitmap image (named constructor idiom)
 

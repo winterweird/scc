@@ -30,10 +30,8 @@ using SDL::Window;
 
 Window::Window(const char *title, int width, int height, int x, int y,
 	Uint32 flags)
-	: window_{CStyleAlloc<Window::Deleter>::alloc(
-		SDL_CreateWindow, "Making window failed",
-		title, x, y, width, height, flags
-	)}
+	: window_{CStyleAlloc<Window::Deleter>::alloc(SDL_CreateWindow,
+		"Making window failed", title, x, y, width, height, flags)}
 {}
 
 Window & Window::operator=(Window that)

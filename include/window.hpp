@@ -49,13 +49,14 @@ public:
 		int y = SDL_WINDOWPOS_UNDEFINED,
 		Uint32 flags = DEFAULT_INIT_FLAGS);
 
-	// FIXME should store a reference/pointer to the renderer in this class
-	//
-	// will throw if there's already a Renderer associated with this Window
+	// will throw if there's already a Renderer associated with this Window;
+	// check hasRenderer() to prevent this.
 	template <typename ... Args>
 	Renderer makeRenderer(Args&& ... args)
 	{
-		return Renderer(window_.get(), std::forward<Args>(args)...);
+		Renderer renderer(window_.get(), std::forward<Args>(args)...);
+		rendererPtr_ = renderer.getWeakPtr();
+		return renderer;
 	}
 
 	// this not only creates an OpenGL context but also makes it the current context.
@@ -64,20 +65,6 @@ public:
 	GLContext makeGLContext(Args&& ... args)
 	{
 		return GLContext(window_.get(), std::forward<Args>(args)...);
-	}
-
-	// you might want to call SDL_GL_SetSwapInterval() before using this
-	void swapWindow() { SDL_GL_SwapWindow(window_.get()); }
-
-	bool makeCurrent(GLContext &context)
-	{
-		return makeCurrent(context.context_);
-	}
-	// if you created your context through other means, you can use this
-	// overload instead.
-	bool makeCurrent(SDL_GLContext context)
-	{
-		return SDL_GL_MakeCurrent(window_.get(), context) >= 0;
 	}
 
 	// SDL_GetWindowSize(). You may pass NULL as a parameter if you're not
@@ -117,6 +104,25 @@ public:
 		return SDL_SetWindowFullscreen(window_.get(), flags) >= 0;
 	}
 
+	// you might want to call SDL_GL_SetSwapInterval() before using this
+	void swapWindow() { SDL_GL_SwapWindow(window_.get()); }
+
+	bool makeCurrent(GLContext &context)
+	{
+		return makeCurrent(context.context_);
+	}
+	// if you created your context through other means, you can use this
+	// overload instead.
+	bool makeCurrent(SDL_GLContext context)
+	{
+		return SDL_GL_MakeCurrent(window_.get(), context) >= 0;
+	}
+
+	// returns a weak pointer to the renderer this window created.
+	std::weak_ptr<Renderer> getRenderer() { return rendererPtr_; }
+
+	bool hasRenderer() { return !rendererPtr_.expired(); }
+
 	// I don't think SDL has any way of copying windows...
 	Window(const Window &that) = delete;
 	Window(Window &&that) = default;
@@ -132,6 +138,7 @@ public:
 	};
 private:
 	std::unique_ptr<SDL_Window, Deleter> window_;
+	std::weak_ptr<Renderer> rendererPtr_;
 };
 
 } // namespace SDL
