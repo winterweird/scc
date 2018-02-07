@@ -19,37 +19,25 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-// scc.hpp: the header that pulls all others.
-// Make sure to include SDL.h before this!
-#ifndef SCC_HPP
-#define SCC_HPP
+#ifndef SCC_GLCOMMON_HPP
+#define SCC_GLCOMMON_HPP
 
+// common stuff needed to use OpenGL.
+
+// FIXME the only reason this has to include SDL.h is to satisfy config.hpp;
+// the SDL version check and NULL correction should have their own headers
+#include <SDL.h>
 #include "config.hpp"
 
-#ifdef HAVE_SDL_TTF
-# include "truetypefont.hpp"
+// note: the calls to OpenGL functions done by these classes don't do any error
+// checking. You're expected to either check for errors after each call, or use
+// a debug callback.
+
+#ifndef USE_GL_CLASSES
+# error "USE_GL_CLASSES must be defined to use the GL helper classes"
 #endif
 
-#ifdef HAVE_SDL_MIXER
-# include "audiochunk.hpp"
-# include "audiochannels.hpp"
-# include "music.hpp"
-#endif
+#include <glew.h>
+#include <gl.h>
 
-#ifdef USE_GL_CLASSES
-# include "GL/common.hpp"
-# include "GL/object.hpp"
-# include "GL/buffer.hpp"
-# include "GL/program.hpp"
-# include "GL/shader.hpp"
-# include "GL/vertexarray.hpp"
-#endif
-
-#include "glcontext.hpp"
-#include "renderer.hpp"
-#include "rwops.hpp"
-#include "surface.hpp"
-#include "texture.hpp"
-#include "window.hpp"
-
-#endif
+#endif // SCC_GLCOMMON_HPP

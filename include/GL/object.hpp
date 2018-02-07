@@ -19,37 +19,21 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-// scc.hpp: the header that pulls all others.
-// Make sure to include SDL.h before this!
-#ifndef SCC_HPP
-#define SCC_HPP
+#ifndef SCC_GLOBJECT_HPP
+#define SCC_GLOBJECT_HPP
 
-#include "config.hpp"
+#include "GL/common.hpp"
 
-#ifdef HAVE_SDL_TTF
-# include "truetypefont.hpp"
-#endif
+namespace GL {
 
-#ifdef HAVE_SDL_MIXER
-# include "audiochunk.hpp"
-# include "audiochannels.hpp"
-# include "music.hpp"
-#endif
+// again, in the openGL sense of the word
+class Object {
+public:
+	virtual void bind(GLenum target) = 0;
+	virtual void unbind(GLenum target) = 0;
+	virtual ~Object() {}
+};
 
-#ifdef USE_GL_CLASSES
-# include "GL/common.hpp"
-# include "GL/object.hpp"
-# include "GL/buffer.hpp"
-# include "GL/program.hpp"
-# include "GL/shader.hpp"
-# include "GL/vertexarray.hpp"
-#endif
+} // namespace GL
 
-#include "glcontext.hpp"
-#include "renderer.hpp"
-#include "rwops.hpp"
-#include "surface.hpp"
-#include "texture.hpp"
-#include "window.hpp"
-
-#endif
+#endif // SCC_GLOBJECT_HPP

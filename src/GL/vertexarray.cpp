@@ -19,37 +19,22 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-// scc.hpp: the header that pulls all others.
-// Make sure to include SDL.h before this!
-#ifndef SCC_HPP
-#define SCC_HPP
+#include "GL/common.hpp"
+#include "GL/vertexarray.hpp"
 
-#include "config.hpp"
+using GL::VertexArray;
 
-#ifdef HAVE_SDL_TTF
-# include "truetypefont.hpp"
-#endif
+VertexArray::VertexArray() : id{0}, count{0}
+{}
 
-#ifdef HAVE_SDL_MIXER
-# include "audiochunk.hpp"
-# include "audiochannels.hpp"
-# include "music.hpp"
-#endif
+VertexArray::VertexArray(GLsizei count) : count{count}
+{
+	glGenVertexArrays(count, &id);
+}
 
-#ifdef USE_GL_CLASSES
-# include "GL/common.hpp"
-# include "GL/object.hpp"
-# include "GL/buffer.hpp"
-# include "GL/program.hpp"
-# include "GL/shader.hpp"
-# include "GL/vertexarray.hpp"
-#endif
+VertexArray::VertexArray(VertexArray &&that) : VertexArray()
+{
+	swap(*this, that);
+}
 
-#include "glcontext.hpp"
-#include "renderer.hpp"
-#include "rwops.hpp"
-#include "surface.hpp"
-#include "texture.hpp"
-#include "window.hpp"
-
-#endif
+VertexArray::~VertexArray() { glDeleteVertexArrays(count , &id); }
