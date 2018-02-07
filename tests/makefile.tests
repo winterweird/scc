@@ -33,25 +33,27 @@ endif
 
 DEBUG = -g
 
-# for the make call in OBJ rule
+# for make recursive calls
 export SCC_HAVE_FLAGS
 export EXTRA_INCLUDE_DIRS
 export DEBUG
 
+OBJPATH := $(addprefix $(OBJDIR)/, $(OBJ))
+
 CXXFLAGS := $(INCLUDE_DIRS) $(EXTRA_INCLUDE_DIRS) $(DEBUG) -std=c++11 \
 	$(SCC_HAVE_FLAGS)
 
-$(BIN) : $(OBJ) $(TESTOBJ)
+$(BIN) : $(OBJPATH) $(TESTOBJ)
 	$(CXX) -o $(BIN) $^ $(LDFLAGS) $(LDLIBS)
 
 $(TESTOBJ) : $(TESTOBJ:.o=.cpp)
 	$(CXX) -c -o $@ $^ $(CXXFLAGS)
 
-$(OBJ) :
+$(OBJPATH) :
 	$(MAKE) -C $(SRCDIR) $@
-	mv $(addprefix $(SRCDIR)/, $@) $(CURDIR)
 
 clean:
-	rm -f $(TESTOBJ) $(OBJ)
+	rm -f $(TESTOBJ)
+	$(MAKE) -C $(SRCDIR) clean
 
 .PHONY: clean

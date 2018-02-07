@@ -1,9 +1,20 @@
 # common definitions that do not rely on other definitions or relative paths.
 # Change these to match your system.
+#
+
+# This has to come before any include directives.
+# It's the absolute path of the directory where this file is
+# (not the current working directory)
+HERE := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
+
 CXX := g++
 
 SDL_INCLUDE_DIR := /usr/include/SDL2
 SDL_LIB_DIR := /usr/lib/x86_64-linux-gnu
+
+# where your object files will be placed.
+# This has to be an absolute path!
+OBJDIR := $(HERE)/obj
 
 # you don't need to provide those dirs if you won't use them
 GL_INCLUDE_DIR := /usr/include/GL
