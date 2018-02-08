@@ -23,9 +23,13 @@
 #include "config.hpp"
 #include "cstylealloc.hpp"
 #include "rwops.hpp"
-using SDL::RWops;
 #include "surface.hpp"
+using SDL::RWops;
 using SDL::Surface;
+
+#ifdef HAVE_SDL_IMAGE
+# include <SDL_image.h>
+#endif
 
 #ifdef HAVE_SDL_TTF
 # include <SDL_ttf.h>
@@ -33,15 +37,42 @@ using SDL::Surface;
 using SDL::TrueTypeFont;
 #endif
 
-Surface::Surface(const char *bitmapPath) : Surface(RWops(bitmapPath, "rb"))
-{}
+Surface Surface::fromBitmap(const char *path)
+{
+	return Surface(RWops(path, "rb"), FromBitmap::dummy);
+}
+Surface Surface::fromBitmap(const RWops &bitmap)
+{
+	return Surface(bitmap, FromBitmap::dummy);
+}
 
 Surface::Surface(const RWops &bitmap)
 	: surface_{FromRWops<Surface::Deleter>::load(bitmap, SDL_LoadBMP_RW,
 		"Making surface from bitmap failed")}
 {}
 
+#ifdef HAVE_SDL_IMAGE
+Surface Surface::fromImage(const char *path)
+{
+	return Surface(RWops(path, "rb"), FromImage::dummy);
+}
+
+Surface Surface::fromImage(const RWops &image)
+{
+	return Surface(image, FromImage::dummy);
+}
+
+Surface::Surface(const RWops &image, FromImage dummy)
+	: surface_{FromRWops<Surface::Deleter>::load(IMG_Load_RW,
+		"Making surface from image failed")}
+#endif
+
 #ifdef HAVE_SDL_TTF
+Surface Surface::fromText(const char *text, TrueTypeFont &font, SDL_Color color)
+{
+	return Surface(text, font, color);
+}
+
 Surface::Surface(const char *text, TrueTypeFont &font, SDL_Color color)
 	: surface_{CStyleAlloc<Surface::Deleter>::alloc(TTF_RenderText_Solid,
 		"Making surface from text failed", font.font_.get(), text,

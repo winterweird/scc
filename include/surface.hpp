@@ -26,6 +26,7 @@
 #include <SDL.h>
 #include "texture.hpp"
 
+
 namespace SDL {
 
 class RWops;
@@ -33,19 +34,21 @@ class RWops;
 class TrueTypeFont;
 #endif
 
-// SDL_Surface has been deprecated in favor of SDL_Texture, but it's still
-// needed sometimes
 class Surface {
 	// for converting Surface into Texture
 	friend Texture::Texture(SDL_Renderer *renderer, const Surface &surface);
 public:
-	// from bitmap
-	Surface(const char *bitmapPath);
-	Surface(const RWops &bitmap);
+	static Surface fromBitmap(const char *path);
+	static Surface fromBitmap(const RWops &bitmap);
+
+#ifdef HAVE_SDL_IMAGE
+	static Surface fromImage(const char *path);
+	static Surface fromImage(const RWops &image);
+#endif
 
 #ifdef HAVE_SDL_TTF
-	// from text
-	Surface(const char *text, TrueTypeFont &font, SDL_Color color);
+	static Surface fromText(const char *text, TrueTypeFont &font,
+		SDL_Color color);
 #endif
 
 	Surface(const Surface &that) = delete;
@@ -64,6 +67,15 @@ public:
 		}
 	};
 private:
+	enum class FromBitmap { dummy };
+	Surface(const RWops &bitmap, FromBitmap dummy);
+#ifdef HAVE_SDL_IMAGE
+	enum class FromImage { dummy };
+	Surface(const RWops &image, FromImage dummy);
+#endif
+#ifdef HAVE_SDL_TTF
+	Surface(const char *text, TrueTypeFont &font, SDL_Color color);
+#endif
 	std::unique_ptr<SDL_Surface, Deleter> surface_;
 };
 
