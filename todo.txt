@@ -1,12 +1,11 @@
 ==== NOW =====
+GL::Texture ctor from image (Surface) and raw RGB(A) data
+Test GL::Texture class
+
 The FIXME in GL/common.hpp
 
-GL::Texture class
-	- how are we going to create this from e.g. an image?
-
 Now that Renderer isn't a member of Window anymore, implement old-style render
-
-Load Surface from non-bitmap image (named constructor idiom)
+Load Texture from bitmap (through Surface; named constructor idiom)
 
 ==== LATER ====
 SDL_GL: bind/unbind texture

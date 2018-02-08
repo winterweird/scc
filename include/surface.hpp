@@ -24,19 +24,18 @@
 
 #include <memory>
 #include <SDL.h>
-#include "texture.hpp"
-
 
 namespace SDL {
 
 class RWops;
+class Texture;
 #ifdef HAVE_SDL_TTF
 class TrueTypeFont;
 #endif
 
 class Surface {
 	// for converting Surface into Texture
-	friend Texture::Texture(SDL_Renderer *renderer, const Surface &surface);
+	friend class Texture;
 public:
 	static Surface fromBitmap(const char *path);
 	static Surface fromBitmap(const RWops &bitmap);

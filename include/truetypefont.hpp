@@ -31,13 +31,13 @@
 #endif
 
 #include <SDL_ttf.h>
-#include "surface.hpp"
 
 namespace SDL {
 
+class Surface;
+
 class TrueTypeFont {
-	friend Surface::Surface(const char *text, TrueTypeFont &font,
-		SDL_Color color);
+	friend class Surface;
 public:
 	TrueTypeFont(const char *path, int size);
 
