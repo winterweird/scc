@@ -1,10 +1,10 @@
 ==== NOW =====
-GL::Texture ctor from image (Surface) and raw RGB(A) data
-Test GL::Texture class
+Makefiles don't rebuild $(OBJ) when the source is newer
 
 The FIXME in GL/common.hpp
 
 Now that Renderer isn't a member of Window anymore, implement old-style render
+
 Load Texture from bitmap (through Surface; named constructor idiom)
 
 ==== LATER ====
