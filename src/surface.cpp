@@ -46,7 +46,7 @@ Surface Surface::fromBitmap(const RWops &bitmap)
 	return Surface(bitmap, FromBitmap::dummy);
 }
 
-Surface::Surface(const RWops &bitmap)
+Surface::Surface(const RWops &bitmap, FromBitmap dummy)
 	: surface_{FromRWops<Surface::Deleter>::load(bitmap, SDL_LoadBMP_RW,
 		"Making surface from bitmap failed")}
 {}

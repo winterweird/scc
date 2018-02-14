@@ -49,15 +49,20 @@ public:
 	static Surface fromText(const char *text, TrueTypeFont &font,
 		SDL_Color color);
 #endif
+	friend int blit(Surface &src, Surface &dest,
+		const SDL_Rect *srcRect = NULL, SDL_Rect *destRect = NULL);
+
+	int getWidth() const { return surface_->w; }
+	int getHeight() const { return surface_->h; }
+	int getPitch() const { return surface_->pitch; }
+	void *getPixels() const { return surface_->pixels; }
+	Uint32 getPixelFormat() const { return surface_->format->format; }
 
 	Surface(const Surface &that) = delete;
 	Surface(Surface &&that) = default;
 	~Surface() = default;
 	Surface & operator=(Surface that);
 	friend void swap(Surface &first, Surface &second) noexcept;
-
-	friend int blit(Surface &src, Surface &dest,
-		const SDL_Rect *srcRect = NULL, SDL_Rect *destRect = NULL);
 
 	struct Deleter {
 		void operator()(SDL_Surface *surface)
