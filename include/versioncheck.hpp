@@ -19,32 +19,18 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-// config.hpp: configure available libs and make preliminary checks.
-#ifndef SCC_CONFIG_HPP
-#define SCC_CONFIG_HPP
+// versioncheck.hpp: checks SDL version.
+// Make sure to include SDL.h before this!
 
-#if __cplusplus < 201103L
-# error "at least C++11 is needed"
+#ifndef SCC_VERSIONCHECK_HPP
+#define SCC_VERSIONCHECK_HPP
+
+#if !defined(SDL_MAJOR_VERSION) || !defined(SDL_MINOR_VERSION)
+# error "Could not determine the SDL version. Is SDL.h included?"
 #endif
 
-// If you've defined NULL as anything else, screw you and the NULL you rode on
-#if NULL != 0
-# undef NULL
-# define NULL 0
+#if SDL_MAJOR_VERSION < 2
+# error "at least SDL 2.0 is needed."
 #endif
 
-// if you want one of these libs, uncomment its macro's respective define or
-// use a command line option to define it.
-// Note: the tests' makefiles require these to be defined in SCC_HAVE_FLAGS
-// make variable, even if they are defined here. See makefile.tests.
-//
-//#define HAVE_SDL_IMAGE
-//#define HAVE_SDL_TTF
-//#define HAVE_SDL_MIXER
-
-// uncomment to use the OpenGL helper classes provided here.
-// Note: you need GLEW to use those.
-//
-//#define USE_GL_CLASSES
-
-#endif // SCC_CONFIG_HPP
+#endif // SCC_VERSIONCHECK_HPP

@@ -23,10 +23,6 @@
 #define SCC_GLCOMMON_HPP
 
 // common stuff needed to use OpenGL.
-
-// FIXME the only reason this has to include SDL.h is to satisfy config.hpp;
-// the SDL version check and NULL correction should have their own headers
-#include <SDL.h>
 #include "config.hpp"
 
 // note: the calls to OpenGL functions done by these classes don't do any error

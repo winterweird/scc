@@ -1,10 +1,17 @@
 ==== NOW =====
-Makefiles don't rebuild $(OBJ) when the source is newer
+Remove the GL classes; there are better openGL C++ wrappers out there
+	- also remove USE_GL_CLASSES from config.hpp
+Make library header only
+	- meaning it won't make sense to have those HAVE macros declared on
+	config.hpp
+	- also meaning SCC headers shouldn't pull SDL.h or other SDL headers
+	- also meaning the tests' makefiles must be changed
+scc.hpp should check (through version macros) if sdl_image, mixer, ... was
+actually included if its repsective have macro have been declared
 
-The FIXME in GL/common.hpp
+A demo folder
 
 Now that Renderer isn't a member of Window anymore, implement old-style render
-
 Load Texture from bitmap (through Surface; named constructor idiom)
 
 ==== LATER ====

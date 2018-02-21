@@ -24,6 +24,7 @@
 #ifndef SCC_HPP
 #define SCC_HPP
 
+#include "versioncheck.hpp"
 #include "config.hpp"
 
 #ifdef HAVE_SDL_TTF
