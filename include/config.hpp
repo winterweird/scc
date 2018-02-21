@@ -42,9 +42,4 @@
 //#define HAVE_SDL_TTF
 //#define HAVE_SDL_MIXER
 
-// uncomment to use the OpenGL helper classes provided here.
-// Note: you need GLEW to use those.
-//
-//#define USE_GL_CLASSES
-
 #endif // SCC_CONFIG_HPP

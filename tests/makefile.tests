@@ -19,18 +19,6 @@ ifneq (,$(findstring -DHAVE_SDL_TTF, $(SCC_HAVE_FLAGS)))
     LDLIBS += -lSDL2_ttf
 endif
 
-# openGL libraries
-ifneq (,$(HAVE_GL))
-    LDFLAGS += -L$(GL_LIB_DIR)
-    LDLIBS += -lGL
-    EXTRA_INCLUDE_DIRS += -I$(GL_INCLUDE_DIR)
-endif
-ifneq (,$(HAVE_GLEW))
-    LDFLAGS += -L$(GLEW_LIB_DIR)
-    LDLIBS += -lGLEW
-    EXTRA_INCLUDE_DIRS += -I$(GLEW_INCLUDE_DIR)
-endif
-
 DEBUG = -g
 
 # for make recursive calls

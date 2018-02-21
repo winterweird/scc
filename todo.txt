@@ -1,11 +1,10 @@
 ==== NOW =====
-Remove the GL classes; there are better openGL C++ wrappers out there
-	- also remove USE_GL_CLASSES from config.hpp
 Make library header only
 	- meaning it won't make sense to have those HAVE macros declared on
 	config.hpp
 	- also meaning SCC headers shouldn't pull SDL.h or other SDL headers
 	- also meaning the tests' makefiles must be changed
+
 scc.hpp should check (through version macros) if sdl_image, mixer, ... was
 actually included if its repsective have macro have been declared
 

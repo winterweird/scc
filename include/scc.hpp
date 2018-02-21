@@ -37,15 +37,6 @@
 # include "music.hpp"
 #endif
 
-#ifdef USE_GL_CLASSES
-# include "GL/common.hpp"
-# include "GL/object.hpp"
-# include "GL/buffer.hpp"
-# include "GL/program.hpp"
-# include "GL/shader.hpp"
-# include "GL/vertexarray.hpp"
-#endif
-
 #include "glcontext.hpp"
 #include "renderer.hpp"
 #include "rwops.hpp"

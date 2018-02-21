@@ -1,6 +1,5 @@
 SCC_ROOT_DIR = ..
 include $(SCC_ROOT_DIR)/makefile.common
-vpath %.cpp GL/
 
 INCLUDE_DIRS := -I$(SDL_INCLUDE_DIR) -I../include
 
@@ -9,21 +8,17 @@ CXXFLAGS := $(INCLUDE_DIRS) $(EXTRA_INCLUDE_DIRS) -std=c++11 $(DEBUG) \
 
 OBJ := $(addprefix $(OBJDIR)/, $(patsubst %.cpp, %.o, $(wildcard *.cpp)))
 
-GLOBJ := $(addprefix $(OBJDIR)/, $(patsubst %.cpp, %.o, \
-	$(notdir $(wildcard GL/*.cpp))))
-
-all : $(OBJ) $(GLOBJ)
+all : $(OBJ)
 
 $(OBJDIR)/%.o : %.cpp
 	$(CXX) -c -o $@ $< $(CXXFLAGS)
 
 $(OBJ) : | $(OBJDIR)
-$(GLOBJ) : | $(OBJDIR)
 
 $(OBJDIR):
 	mkdir -p $(OBJDIR)
 
 clean:
-	rm -f $(OBJ) $(GLOBJ)
+	rm -f $(OBJ)
 
 .PHONY: clean all
