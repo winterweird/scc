@@ -20,8 +20,7 @@
 */
 
 #include <memory>
-#include <SDL.h>
-#include "config.hpp"
+#include "null.hpp"
 #include "cstylealloc.hpp"
 
 namespace SDL {
@@ -61,17 +60,30 @@ public:
 	// same as in SDL.
 	// There's no wrapper around SDL_RWclose() because that will only be
 	// called upon destruction
-	Sint64 size() const;
-	size_t read(void *ptr, size_t size, size_t maxnum) const;
-	size_t write(const void *ptr, size_t size, size_t num);
-	Sint64 seek(Sint64 offset, int whence);
-	Sint64 tell() const;
+	Sint64 size() const { return SDL_RWsize(rwops_.get()); }
+	size_t read(void *ptr, size_t size, size_t maxnum) const
+	{
+		return SDL_RWread(rwops_.get(), ptr, size, maxnum);
+	}
+	size_t write(const void *ptr, size_t size, size_t num)
+	{
+		return SDL_RWwrite(rwops_.get(), ptr, size, num);
+	}
+	Sint64 seek(Sint64 offset, int whence)
+	{
+		return SDL_RWseek(rwops_.get(), offset, whence);
+	}
+	Sint64 tell() const { return SDL_RWtell(rwops_.get()); }
 
 	RWops(const RWops &that) = delete;
 	RWops(RWops &&that) = default;
 	~RWops() = default;
-	RWops & operator=(RWops that);
-	friend void swap(RWops &first, RWops &second);
+	RWops & operator=(RWops that) { swap(*this, that); return *this; }
+	friend void swap(RWops &first, RWops &second) noexcept
+	{
+		using std::swap;
+		swap(first.rwops_, second.rwops_);
+	}
 
 	struct Deleter {
 		void operator()(SDL_RWops *rwops) { SDL_RWclose(rwops); }
@@ -104,5 +116,43 @@ struct FromRWops {
 			rwops.rwops_.get(), 0, std::forward<Args>(args)...);
 	}
 };
+
+RWops::RWops(const char *filename, const char *mode)
+	: rwops_{CStyleAlloc<RWops::Deleter>::alloc(SDL_RWFromFile,
+		"Making RWops from file", filename, mode)}
+{}
+
+RWops::RWops(void *mem, int size)
+	: rwops_{CStyleAlloc<RWops::Deleter>::alloc(SDL_RWFromMem,
+		"Making RWops from memory failed", mem, size)}
+{}
+
+RWops::RWops(const void *mem, int size)
+	: rwops_{CStyleAlloc<RWops::Deleter>::alloc(SDL_RWFromConstMem,
+		"Making RWops from const memory failed", mem, size)}
+{}
+
+RWops::RWops(
+	decltype(SDL_RWops::size) size,
+	decltype(SDL_RWops::seek) seek,
+	decltype(SDL_RWops::read) read,
+	decltype(SDL_RWops::write) write,
+	decltype(SDL_RWops::close) close,
+	Uint32 type,
+	void *data1,
+	void *data2
+) : rwops_{CStyleAlloc<RWops::Deleter>::alloc(SDL_AllocRW,
+	"Making custom RWops failed")}
+{
+	// here, rwops_ already has valid data
+	rwops_->size = size;
+	rwops_->seek = seek;
+	rwops_->read = read;
+	rwops_->write = write;
+	rwops_->close = close;
+	rwops_->type = type;
+	rwops_->hidden.unknown.data1 = data1;
+	rwops_->hidden.unknown.data2 = data2;
+}
 
 } // namespace SDL

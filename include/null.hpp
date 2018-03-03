@@ -19,18 +19,13 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-// versioncheck.hpp: checks SDL version.
-// Make sure to include SDL.h before this!
+#ifndef SCC_NULL_HPP
+#define SCC_NULL_HPP
 
-#ifndef SCC_VERSIONCHECK_HPP
-#define SCC_VERSIONCHECK_HPP
-
-#if !defined(SDL_MAJOR_VERSION) || !defined(SDL_MINOR_VERSION)
-# error "Could not determine the SDL version. Is SDL.h included?"
+// If you've defined NULL as anything else, screw you and the NULL you rode on
+#if NULL != 0
+# undef NULL
+# define NULL 0
 #endif
 
-#if SDL_MAJOR_VERSION < 2
-# error "at least SDL 2.0 is needed."
-#endif
-
-#endif // SCC_VERSIONCHECK_HPP
+#endif // SCC_NULL_HPP

@@ -21,17 +21,40 @@
 
 // scc.hpp: the header that pulls all others.
 // Make sure to include SDL.h before this!
+// If you want to use a subproject X of SDL, you must define HAVE_SDL_X
+// and include its respective header as well.
 #ifndef SCC_HPP
 #define SCC_HPP
 
-#include "versioncheck.hpp"
-#include "config.hpp"
+#if __cplusplus < 201103L
+# error "at least C++11 is needed"
+#endif
+
+#if !defined(SDL_MAJOR_VERSION) || !defined(SDL_MINOR_VERSION)
+# error "Could not determine the SDL version. Is SDL.h included?"
+#endif
+
+#if SDL_MAJOR_VERSION < 2
+# error "at least SDL 2.0 is needed."
+#endif
+
+#ifdef HAVE_SDL_IMAGE
+# ifndef SDL_IMAGE_MAJOR_VERSION
+#  error "HAVE_SDL_IMAGE is defined, but SDL_image.h isn't included!"
+# endif
+#endif
 
 #ifdef HAVE_SDL_TTF
+# ifndef SDL_TTF_MAJOR_VERSION
+#  error "HAVE_SDL_TTF is defined, but SDL_ttf.h isn't included!"
+# endif
 # include "truetypefont.hpp"
 #endif
 
 #ifdef HAVE_SDL_MIXER
+# ifndef SDL_MIXER_MAJOR_VERSION
+#  error "HAVE_SDL_MIXER is defined, but SDL_mixer.h isn't included!"
+# endif
 # include "audiochunk.hpp"
 # include "audiochannels.hpp"
 # include "music.hpp"

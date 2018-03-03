@@ -23,7 +23,7 @@
 #define SCC_WINDOW_HPP
 
 #include <memory>
-#include <SDL.h>
+#include "cstylealloc.hpp"
 #include "renderer.hpp"
 #include "glcontext.hpp"
 
@@ -59,8 +59,9 @@ public:
 		return renderer;
 	}
 
-	// this not only creates an OpenGL context but also makes it the current context.
-	// will throw if the window wasn't created with the SDL_WINDOW_OPENGL flag.
+	// this not only creates an OpenGL context but also makes it the current
+	// context. Will throw if the window wasn't created with the
+	// SDL_WINDOW_OPENGL flag.
 	template <typename ... Args>
 	GLContext makeGLContext(Args&& ... args)
 	{
@@ -70,7 +71,10 @@ public:
 	// SDL_GetWindowSize(). You may pass NULL as a parameter if you're not
 	// interested in its value, though you can also use getWidth() or
 	// getHeight() in that case
-	void getSize(int *width, int *height) const;
+	void getSize(int *width, int *height) const
+	{
+		SDL_GetWindowSize(window_.get(), width, height);
+	}
 
 	// wrappers around SDL_GetWindowSize(), but they return the value.
 	int getWidth() const;
@@ -127,8 +131,12 @@ public:
 	Window(const Window &that) = delete;
 	Window(Window &&that) = default;
 	~Window() = default;
-	Window & operator=(Window that);
-	friend void swap(Window &first, Window &second) noexcept;
+	Window & operator=(Window that) { swap(*this, that); return *this; }
+	friend void swap(Window &first, Window &second) noexcept
+	{
+		using std::swap;
+		swap(first.window_, second.window_);
+	}
 
 	struct Deleter {
 		void operator()(SDL_Window *window)
@@ -140,6 +148,26 @@ private:
 	std::unique_ptr<SDL_Window, Deleter> window_;
 	std::weak_ptr<Renderer> rendererPtr_;
 };
+
+Window::Window(const char *title, int width, int height, int x, int y,
+	Uint32 flags)
+	: window_{CStyleAlloc<Window::Deleter>::alloc(SDL_CreateWindow,
+		"Making window failed", title, x, y, width, height, flags)}
+{}
+
+int Window::getWidth() const
+{
+	int width;
+	SDL_GetWindowSize(window_.get(), &width, NULL);
+	return width;
+}
+
+int Window::getHeight() const
+{
+	int height;
+	SDL_GetWindowSize(window_.get(), NULL, &height);
+	return height;
+}
 
 } // namespace SDL
 

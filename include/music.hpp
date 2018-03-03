@@ -23,14 +23,14 @@
 #define SCC_MUSIC_HPP
 
 #include <memory>
-#include <SDL.h>
-#include "config.hpp"
+#include <stdexcept>
+#include "null.hpp"
+#include "cstylealloc.hpp"
+#include "rwops.hpp"
 
 #ifndef HAVE_SDL_MIXER
 # error "cannot use Music class without SDL_mixer"
 #endif
-
-#include <SDL_mixer.h>
 
 namespace SDL {
 
@@ -38,14 +38,20 @@ class RWops;
 
 class Music {
 public:
-	Music(const char *filename);
+	Music(const char *filename) : Music(RWops(filename, "rb")) {}
 	Music(const RWops &file);
 
-	int play(int loops = -1);
-	int fadeIn(int loops, int ms);
-	int fadeInPos(int loops, int ms, double position);
+	int play(int loops = -1) { return Mix_PlayMusic(music_.get(), loops); }
+	int fadeIn(int loops, int ms)
+	{
+		return Mix_FadeInMusic(music_.get(), loops, ms);
+	}
+	int fadeInPos(int loops, int ms, double position)
+	{
+		return Mix_FadeInMusicPos(music_.get(), loops, ms, position);
+	}
 
-	Mix_MusicType getType();
+	Mix_MusicType getType() { return Mix_GetMusicType(music_.get()); }
 
 	static int fadeOut(int ms) { return Mix_FadeOutMusic(ms); }
 	static int halt() { return Mix_HaltMusic(); }
@@ -68,8 +74,12 @@ public:
 	Music(const Music &that) = delete;
 	Music(Music &&that) = default;
 	~Music() = default;
-	Music & operator=(Music that);
-	friend void swap(Music &first, Music &second) noexcept;
+	Music & operator=(Music that) { swap(*this, that); return *this; }
+	friend void swap(Music &first, Music &second) noexcept
+	{
+		using std::swap;
+		swap(first.music_, second.music_);
+	}
 
 	struct Deleter {
 		void operator()(Mix_Music *music) { Mix_FreeMusic(music); }
@@ -77,6 +87,11 @@ public:
 private:
 	std::unique_ptr<Mix_Music, Deleter> music_;
 };
+
+Music::Music(const RWops &file)
+	: music_{FromRWops<Music::Deleter>::load(file, Mix_LoadMUS_RW,
+		"Loading music from file failed")}
+{}
 
 } // namespace SDL
 

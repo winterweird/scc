@@ -22,14 +22,11 @@
 #ifndef SCC_AUDIO_CHANNELS
 #define SCC_AUDIO_CHANNELS
 
-#include <SDL.h>
-#include <config.hpp>
+#include "null.hpp"
 
 #ifndef HAVE_SDL_MIXER
 # error "cannot use class AudioChannels without SDL_mixer"
 #endif
-
-#include <SDL_mixer.h>
 
 namespace SDL {
 

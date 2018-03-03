@@ -23,14 +23,13 @@
 #define SCC_TRUETYPEFONT_HPP
 
 #include <memory>
-#include <SDL.h>
-#include "config.hpp"
+#include <stdexcept>
+#include "null.hpp"
+#include "cstylealloc.hpp"
 
 #ifndef HAVE_SDL_TTF
 # error "can't use TrueTypeFont without SDL_ttf"
 #endif
-
-#include <SDL_ttf.h>
 
 namespace SDL {
 
@@ -45,7 +44,15 @@ public:
 	TrueTypeFont(TrueTypeFont &&that) = default;
 	~TrueTypeFont() = default;
 	TrueTypeFont& operator=(TrueTypeFont that);
-	friend void swap(TrueTypeFont &first, TrueTypeFont &second) noexcept;
+	{
+		swap(*this, that);
+		return *this;
+	}
+	friend void swap(TrueTypeFont &first, TrueTypeFont &second) noexcept
+	{
+		using std::swap;
+		swap(first.font_, second.font_);
+	}
 
 	struct Deleter {
 		void operator()(TTF_Font *font) { TTF_CloseFont(font); }
@@ -53,6 +60,11 @@ public:
 private:
 	std::unique_ptr<TTF_Font, Deleter> font_;
 };
+
+TrueTypeFont::TrueTypeFont(const char *path, int size)
+	: font_{CStyleAlloc<TrueTypeFont::Deleter>::alloc(TTF_OpenFont,
+		"Making TrueTypeFont failed", path, size)}
+{}
 
 } // namespace SDL
 

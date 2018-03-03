@@ -23,7 +23,13 @@
 #define SCC_SURFACE_HPP
 
 #include <memory>
-#include <SDL.h>
+#include "null.hpp"
+#include "cstylealloc.hpp"
+#include "rwops.hpp"
+
+#ifdef HAVE_SDL_TTF
+# include "truetypefont.hpp"
+#endif
 
 namespace SDL {
 
@@ -37,20 +43,39 @@ class Surface {
 	// for converting Surface into Texture
 	friend class Texture;
 public:
-	static Surface fromBitmap(const char *path);
-	static Surface fromBitmap(const RWops &bitmap);
+	static Surface fromBitmap(const char *path)
+	{
+		return Surface(RWops(path, "rb"), FromBitmap::dummy);
+	}
+	static Surface fromBitmap(const RWops &bitmap)
+	{
+		return Surface(bitmap, FromBitmap::dummy);
+	}
 
 #ifdef HAVE_SDL_IMAGE
-	static Surface fromImage(const char *path);
-	static Surface fromImage(const RWops &image);
+	static Surface fromImage(const char *path)
+	{
+		return Surface(RWops(path, "rb"), FromImage::dummy);
+	}
+	static Surface fromImage(const RWops &image)
+	{
+		return Surface(image, FromImage::dummy);
+	}
 #endif
 
 #ifdef HAVE_SDL_TTF
 	static Surface fromText(const char *text, TrueTypeFont &font,
-		SDL_Color color);
+		SDL_Color color)
+	{
+		return Surface(text, font, color);
+	}
 #endif
 	friend int blit(Surface &src, Surface &dest,
-		const SDL_Rect *srcRect = NULL, SDL_Rect *destRect = NULL);
+		const SDL_Rect *srcRect = NULL, SDL_Rect *destRect = NULL)
+	{
+		return SDL_BlitSurface(src.surface_.get(), srcRect,
+			dest.surface_.get(), destRect);
+	}
 
 	int getWidth() const { return surface_->w; }
 	int getHeight() const { return surface_->h; }
@@ -61,8 +86,12 @@ public:
 	Surface(const Surface &that) = delete;
 	Surface(Surface &&that) = default;
 	~Surface() = default;
-	Surface & operator=(Surface that);
-	friend void swap(Surface &first, Surface &second) noexcept;
+	Surface & operator=(Surface that) { swap(*this, that); return *this; }
+	friend void swap(Surface &first, Surface &second) noexcept
+	{
+		using std::swap;
+		swap(first.surface_, second.surface_);
+	}
 
 	struct Deleter {
 		void operator()(SDL_Surface *surface)
@@ -72,13 +101,25 @@ public:
 	};
 private:
 	enum class FromBitmap { dummy };
-	Surface(const RWops &bitmap, FromBitmap dummy);
+	Surface(const RWops &bitmap, FromBitmap dummy)
+		: surface_{FromRWops<Surface::Deleter>::load(bitmap,
+			SDL_LoadBMP_RW, "Making surface from bitmap failed")}
+	{}
 #ifdef HAVE_SDL_IMAGE
 	enum class FromImage { dummy };
-	Surface(const RWops &image, FromImage dummy);
+	Surface(const RWops &image, FromImage dummy)
+		: surface_{FromRWops<Surface::Deleter>::load(IMG_Load_RW,
+			"Making surface from image failed")}
+	{}
 #endif
 #ifdef HAVE_SDL_TTF
-	Surface(const char *text, TrueTypeFont &font, SDL_Color color);
+	Surface(const char *text, TrueTypeFont &font, SDL_Color color)
+		: surface_{CStyleAlloc<Surface::Deleter>::alloc(
+			TTF_RenderText_Solid,
+			"Making surface from text failed", font.font_.get(),
+			text, color)}
+{}
+
 #endif
 	std::unique_ptr<SDL_Surface, Deleter> surface_;
 };

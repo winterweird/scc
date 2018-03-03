@@ -22,8 +22,7 @@
 #ifndef SCC_GLCONTEXT_HPP
 #define SCC_GLCONTEXT_HPP
 
-#include <SDL.h>
-#include "config.hpp"
+#include "null.hpp"
 
 namespace SDL {
 
@@ -33,12 +32,16 @@ class Window;
 class GLContext {
 	friend class Window; // makeCurrent()
 public:
-	// the constructor is called from makeGLContext()
-	GLContext(SDL_Window *window);
+	// the constructor is called from Window's makeGLContext()
+	GLContext(SDL_Window *window) : context_{SDL_GL_CreateContext(window)}
+	{}
 
 	GLContext(const GLContext &that) = delete;
-	GLContext(GLContext &&that);
-	~GLContext();
+	GLContext(GLContext &&that) : GLContext() { swap(*this, that); }
+	~GLContext()
+	{
+		if(context_ != NULL) { SDL_GL_DeleteContext(context_); }
+	}
 	GLContext & operator=(GLContext that) { swap(*this, that); return *this; }
 	friend void swap(GLContext &first, GLContext &second) noexcept
 	{
@@ -55,7 +58,7 @@ private:
 	// an empty ctor to implement the move ctor.
 	// I don't want users to be able to instantiate an empty object, though,
 	// so this ctor has been made private.
-	GLContext();
+	GLContext() : context_(NULL) {}
 };
 
 } // namespace SDL
