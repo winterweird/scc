@@ -24,7 +24,6 @@
 #include <gl.h>
 
 #include <SDL.h>
-#include "config.hpp"
 #include "window.hpp"
 #include "glcontext.hpp"
 

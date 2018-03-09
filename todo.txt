@@ -1,14 +1,17 @@
 ==== NOW =====
-Make library header only
-	- the tests' makefiles must be changed
-	- rewrite config test
-	- rewrite README with right usage info (the user has to define the have
-	  macros and include any SDL headers before including scc.hpp)
+The user shouldn't need to define the HAVE* macros when we can define them
+instead, based on which version macros are available at the moment scc.hpp was
+included
 
-A demo folder
+Rewrite config test
+
+Rewrite README with right usage info (the user has to include any SDL headers
+before including scc.hpp)
 
 Now that Renderer isn't a member of Window anymore, implement old-style render
 Load Texture from bitmap (through Surface; named constructor idiom)
+
+A demo folder
 
 ==== LATER ====
 SDL_GL: bind/unbind texture

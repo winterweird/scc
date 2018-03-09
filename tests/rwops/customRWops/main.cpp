@@ -24,7 +24,6 @@
 #include <string>
 #include <ios>
 #include <SDL.h>
-#include "config.hpp"
 #include "rwops.hpp"
 
 const int ERR_SDL_INIT = -1;

@@ -43,7 +43,7 @@ public:
 	TrueTypeFont(const TrueTypeFont &that) = delete;
 	TrueTypeFont(TrueTypeFont &&that) = default;
 	~TrueTypeFont() = default;
-	TrueTypeFont& operator=(TrueTypeFont that);
+	TrueTypeFont& operator=(TrueTypeFont that)
 	{
 		swap(*this, that);
 		return *this;

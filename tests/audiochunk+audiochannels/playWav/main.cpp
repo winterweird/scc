@@ -20,7 +20,6 @@
 */
 
 #include <SDL.h>
-#include "config.hpp"
 #include <SDL_mixer.h>
 #include "audiochannels.hpp"
 #include "audiochunk.hpp"

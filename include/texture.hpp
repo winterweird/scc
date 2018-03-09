@@ -66,7 +66,7 @@ public:
 
 	// Wrapper around SDL_QueryTexture(). You can pass NULL for parameters
 	// you're not interested in.
-	int query(Uint32 *format, int *access, int *width, int *height) const
+	int query(Uint32 *format, int *access, int *w, int *h) const
 	{
 		return SDL_QueryTexture(texture_.get(), format, access, w, h);
 	}

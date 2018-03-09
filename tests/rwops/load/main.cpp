@@ -22,7 +22,6 @@
 #include <iostream>
 #include <stdexcept>
 #include <SDL.h>
-#include "config.hpp"
 #include "rwops.hpp"
 using SDL::RWops;
 using SDL::FromRWops;

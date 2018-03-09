@@ -23,7 +23,6 @@
 #include <iomanip>
 #include <vector>
 #include <SDL.h>
-#include "config.hpp"
 #include "rwops.hpp"
 
 const int ERR_SDL_INIT = -1;

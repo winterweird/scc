@@ -21,7 +21,6 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
-#include "config.hpp"
 #include "window.hpp"
 #include "renderer.hpp"
 #include "texture.hpp"

@@ -8,7 +8,7 @@ DEBUG = -g
 export DEBUG
 
 CXX = g++
-CXXFLAGS = -I/usr/local/include/SDL2 -I$(SCC_ROOT_DIR)/include $(DEBUG) -std=c++11 \
+CXXFLAGS = -I/usr/include/SDL2 -I$(SCC_ROOT_DIR)/include $(DEBUG) -std=c++11 \
 	$(SCC_HAVE_FLAGS)
 LDLIBS = -lSDL2 -lSDL2_mixer
 
@@ -18,8 +18,6 @@ TESTOBJ_MIDI = midi.o
 TESTOBJ_MP3 = mp3.o
 TESTOBJ_FLAC = flac.o
 
-SRCDIR = $(SCC_ROOT_DIR)/src
-OBJ = music.o rwops.o
 
 BIN_OGG = playOgg
 BIN_MIDI = playMidi
@@ -29,13 +27,13 @@ BIN_FLAC = playFlac
 what :
 	@echo 'make what?'
 
-ogg : $(OBJ) $(TESTOBJ_OGG) $(TESTOBJ_COMMON)
+ogg : $(TESTOBJ_OGG) $(TESTOBJ_COMMON)
 	$(CXX) -o $(BIN_OGG) $^ $(LDLIBS)
-midi : $(OBJ) $(TESTOBJ_MIDI) $(TESTOBJ_COMMON)
+midi : $(TESTOBJ_MIDI) $(TESTOBJ_COMMON)
 	$(CXX) -o $(BIN_MIDI) $^ $(LDLIBS)
-mp3 : $(OBJ) $(TESTOBJ_MP3) $(TESTOBJ_COMMON)
+mp3 : $(TESTOBJ_MP3) $(TESTOBJ_COMMON)
 	$(CXX) -o $(BIN_MP3) $^ $(LDLIBS)
-flac : $(OBJ) $(TESTOBJ_FLAC) $(TESTOBJ_COMMON)
+flac : $(TESTOBJ_FLAC) $(TESTOBJ_COMMON)
 	$(CXX) -o $(BIN_FLAC) $^ $(LDLIBS)
 all : ogg midi mp3 flac
 
@@ -48,11 +46,7 @@ $(TESTOBJ_MP3) : $(TESTOBJ_MP3:.o=.cpp)
 $(TESTOBJ_FLAC) : $(TESTOBJ_FLAC:.o=.cpp)
 	$(CXX) -c -o $@ $^ $(CXXFLAGS)
 
-$(OBJ) :
-	$(MAKE) -C $(SRCDIR) $@
-	mv $(addprefix $(SRCDIR)/, $@) ./
-
 clean:
-	rm -f $(TESTOBJ_OGG) $(TESTOBJ_MIDI) $(TESTOBJ_MP3) $(TESTOBJ_FLAC) $(TESTOBJ_COMMON) $(OBJ)
+	rm -f $(TESTOBJ_OGG) $(TESTOBJ_MIDI) $(TESTOBJ_MP3) $(TESTOBJ_FLAC) $(TESTOBJ_COMMON)
 
 .PHONY: clean all what

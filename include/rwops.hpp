@@ -19,6 +19,9 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
+#ifndef SCC_RWOPS_HPP
+#define SCC_RWOPS_HPP
+
 #include <memory>
 #include "null.hpp"
 #include "cstylealloc.hpp"
@@ -119,7 +122,7 @@ struct FromRWops {
 
 RWops::RWops(const char *filename, const char *mode)
 	: rwops_{CStyleAlloc<RWops::Deleter>::alloc(SDL_RWFromFile,
-		"Making RWops from file", filename, mode)}
+		"Making RWops from file failed", filename, mode)}
 {}
 
 RWops::RWops(void *mem, int size)
@@ -156,3 +159,5 @@ RWops::RWops(
 }
 
 } // namespace SDL
+
+#endif // SCC_RWOPS_HPP

@@ -22,7 +22,6 @@
 #include <string>
 #include <stdexcept>
 #include <SDL.h>
-#include "config.hpp"
 #include "window.hpp"
 #include "renderer.hpp"
 using SDL::Window;

@@ -108,8 +108,8 @@ private:
 #ifdef HAVE_SDL_IMAGE
 	enum class FromImage { dummy };
 	Surface(const RWops &image, FromImage dummy)
-		: surface_{FromRWops<Surface::Deleter>::load(IMG_Load_RW,
-			"Making surface from image failed")}
+		: surface_{FromRWops<Surface::Deleter>::load(image,
+			IMG_Load_RW, "Making surface from image failed")}
 	{}
 #endif
 #ifdef HAVE_SDL_TTF
