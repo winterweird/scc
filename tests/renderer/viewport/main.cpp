@@ -42,8 +42,8 @@ void quit()
 }
 
 const char *bitmapName = "screen.bmp";
-const int bitmapHeight = 800;
-const int bitmapWidth = 600;
+const int bitmapHeight = 50;
+const int bitmapWidth = 50;
 
 void parseKey(const SDL_Keycode &key, bool &useViewport)
 {
@@ -56,12 +56,12 @@ void gameLoop()
 {
 	Window window("test", 800, 600);
 	Renderer renderer = window.makeRenderer();
-	Texture texture = renderer.makeTexture(Surface(bitmapName));
+	Texture texture = renderer.makeTexture(Surface::fromBitmap(bitmapName));
 
 	const int windowWidth = window.getWidth();
 	const int windowHeight = window.getHeight();
 	const SDL_Rect screenRect{0, 0, windowWidth, windowHeight};
-	const SDL_Rect viewport{0, 0, bitmapHeight / 2, bitmapWidth / 2};
+	const SDL_Rect viewport{0, 0, windowWidth / 2, windowHeight / 2};
 
 	bool quit = false;
 	bool useViewport = true;
@@ -82,7 +82,7 @@ void gameLoop()
 		} else {
 			renderer.setViewport(nullptr);
 		}
-		renderer.render(texture, 0, 0);
+		renderer.render(texture, NULL, &screenRect);
 
 		renderer.present();
 	}
