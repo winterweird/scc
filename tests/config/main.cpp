@@ -21,7 +21,13 @@
 
 #include <iostream>
 #include <SDL.h>
-#include "config.hpp"
+
+// to test, uncomment any or all of the above, and also uncomment the
+// respective SCC_HAVE_FLAGS in the makefile.
+//#include <SDL_image.h>
+//#include <SDL_ttf.h>
+//#include <SDL_mixer.h>
+#include "scc.hpp"
 
 int main(int argc, char **argv)
 {
