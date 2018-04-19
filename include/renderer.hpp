@@ -27,7 +27,6 @@
 #include <stdexcept>
 #include "cstylealloc.hpp"
 #include "texture.hpp"
-#include "window.hpp"
 
 namespace SDL {
 
