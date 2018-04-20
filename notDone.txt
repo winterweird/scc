@@ -1,4 +1,5 @@
 A demo folder
+Joystick support
 Texture::bind() and Texture::unbind() were not tested
 TrueTypeFont doesn't have all the functionailty from SDL_ttf
 SDL_mixer's sound effects API is missing

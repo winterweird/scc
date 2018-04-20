@@ -1,6 +1,6 @@
 /*
   SDL C++ Classes
-  Copyright (C) 2017 Mateus Carmo M. de F. Barbosa
+  Copyright (C) 2017-2018 Mateus Carmo M. de F. Barbosa
  
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
