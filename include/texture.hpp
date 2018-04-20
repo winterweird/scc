@@ -112,6 +112,22 @@ public:
 		return SDL_GetTextureBlendMode(texture_.get(), blendMode) >= 0;
 	}
 
+	// "You need a renderer to create a SDL_Texture, therefore you can only
+	// use this function with an implicit OpenGL context from
+	// SDL_CreateRenderer(), not with your own OpenGL context.
+	// If you need control over your OpenGL context, you need to write your
+	// own texture-loading methods."
+	// <wiki.libsdl.org/SDL_GL_BindTexture>
+	//
+	bool bind(float *w = NULL, float *h = NULL)
+	{
+		return SDL_GL_BindTexture(texture_.get(), w, h);
+	}
+	bool unbind(float *w = NULL, float *h = NULL)
+	{
+		return SDL_GL_UnbindTexture(texture_.get(), w, h);
+	}
+
 	Texture(const Texture &that) = delete;
 	Texture(Texture &&that) = default;
 	~Texture() = default;
