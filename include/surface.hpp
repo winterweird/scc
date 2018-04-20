@@ -70,11 +70,43 @@ public:
 		return Surface(text, font, color);
 	}
 #endif
-	friend int blit(Surface &src, Surface &dest,
+	friend bool blit(Surface &src, Surface &dest,
 		const SDL_Rect *srcRect = NULL, SDL_Rect *destRect = NULL)
 	{
 		return SDL_BlitSurface(src.surface_.get(), srcRect,
-			dest.surface_.get(), destRect);
+			dest.surface_.get(), destRect) >= 0;
+	}
+	friend bool blitScaled(Surface &src, Surface &dest,
+		const SDL_Rect *srcRect = NULL, SDL_Rect *destRect = NULL)
+	{
+		return SDL_BlitScaled(src.surface_.get(), srcRect,
+			dest.surface_.get(), destRect) >= 0;
+	}
+
+	// these overloads are for blitting to the Window's surface
+	friend bool blit(Surface &src, SDL_Surface *dest,
+		const SDL_Rect *srcRect = NULL, SDL_Rect *destRect = NULL)
+	{
+		return SDL_BlitSurface(src.surface_.get(), srcRect,
+			dest, destRect) >= 0;
+	}
+	friend bool blit(SDL_Surface *src, Surface &dest,
+		const SDL_Rect *srcRect = NULL, SDL_Rect *destRect = NULL)
+	{
+		return SDL_BlitSurface(src, srcRect,
+			dest.surface_.get(), destRect) >= 0;
+	}
+	friend bool blitScaled(Surface &src, SDL_Surface *dest,
+		const SDL_Rect *srcRect = NULL, SDL_Rect *destRect = NULL)
+	{
+		return SDL_BlitScaled(src.surface_.get(), srcRect,
+			dest, destRect) >= 0;
+	}
+	friend bool blitScaled(SDL_Surface *src, Surface &dest,
+		const SDL_Rect *srcRect = NULL, SDL_Rect *destRect = NULL)
+	{
+		return SDL_BlitScaled(src, srcRect,
+			dest.surface_.get(), destRect) >= 0;
 	}
 
 	int getWidth() const { return surface_->w; }
@@ -118,8 +150,7 @@ private:
 			TTF_RenderText_Solid,
 			"Making surface from text failed", font.font_.get(),
 			text, color)}
-{}
-
+	{}
 #endif
 	std::unique_ptr<SDL_Surface, Deleter> surface_;
 };

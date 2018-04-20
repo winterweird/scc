@@ -30,9 +30,10 @@
 namespace SDL {
 
 // note: to actually draw something to the window, you'll have to choose between
-// - creating a Renderer
-// - creating a GLContext and drawing with OpenGL
-// - blitting to the window's surface (no hardware acceleration) TODO
+// - creating a Renderer (2D)
+// - creating a GLContext and drawing with OpenGL (3D)
+// - blitting to the window's surface (no hardware acceleration)
+//
 class Window {
 	// TODO SDL_CreateWindowFrom
 public:
@@ -120,6 +121,28 @@ public:
 	bool makeCurrent(SDL_GLContext context)
 	{
 		return SDL_GL_MakeCurrent(window_.get(), context) >= 0;
+	}
+
+	// "Do not free this surface.
+	// This surface will be invalidated if the window is resized.
+	// After resizing a window this function must be called again to return
+	// a valid surface.
+	// You may not combine this with 3D or the rendering API on this window."
+	// (SDL wiki)
+	// Because this surface mustn't be freed, it is not and must not
+	// be put in a Surface class.
+	SDL_Surface *getSurface()
+	{
+		return SDL_GetWindowSurface(window_.get());
+	}
+	bool updateSurface()
+	{
+		return SDL_UpdateWindowSurface(window_.get()) >= 0;
+	}
+	bool updateSurfaceRects(const std::vector<SDL_Rect> rects)
+	{
+		return SDL_UpdateWindowSurfaceRects(window_.get(),
+			rects.data(), rects.size()) >= 0;
 	}
 
 	// returns a weak pointer to the renderer this window created.
