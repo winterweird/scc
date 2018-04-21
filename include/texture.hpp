@@ -123,9 +123,9 @@ public:
 	{
 		return SDL_GL_BindTexture(texture_.get(), w, h);
 	}
-	bool unbind(float *w = NULL, float *h = NULL)
+	bool unbind()
 	{
-		return SDL_GL_UnbindTexture(texture_.get(), w, h);
+		return SDL_GL_UnbindTexture(texture_.get());
 	}
 
 	Texture(const Texture &that) = delete;

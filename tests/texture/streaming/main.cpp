@@ -46,19 +46,19 @@ void quit()
 void gameLoop()
 {
 	Window window("test");
-	Renderer renderer = window.makeRenderer();
+	window.makeRenderer();
 
 	const int windowWidth = window.getWidth();
 	const int windowHeight = window.getHeight();
 
 	// get first supported format
 	SDL_RendererInfo info;
-	renderer.getInfo(&info);
+	window.renderer->getInfo(&info);
 	Uint32 format = *(info.texture_formats);
 	SDL_Log("texture format: %s", SDL_GetPixelFormatName(format));
 	const int textureWidth = 100;
 	const int textureHeight = 100;
-	Texture streamTexture = renderer.makeTexture(format,
+	Texture streamTexture = window.renderer->makeTexture(format,
 		SDL_TEXTUREACCESS_STREAMING, textureWidth, textureHeight);
 
 	bool quit = false;
@@ -70,8 +70,8 @@ void gameLoop()
 			}
 		}
 
-		renderer.setDrawColor(0, 0, 0, 0xff);
-		renderer.clear();
+		window.renderer->setDrawColor(0, 0, 0, 0xff);
+		window.renderer->clear();
 
 		int pitch;
 		void *lockedPixels;
@@ -106,11 +106,11 @@ void gameLoop()
 
 		streamTexture.unlock();
 
-		renderer.render(streamTexture,
+		window.renderer->render(streamTexture,
 			(windowWidth - textureWidth) / 2,
 			(windowHeight - textureHeight) / 2);
 
-		renderer.present();
+		window.renderer->present();
 	}
 }
 

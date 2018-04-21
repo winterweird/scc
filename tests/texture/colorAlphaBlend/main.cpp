@@ -146,10 +146,10 @@ inline void parseKey(SDL_Keycode key, Uint16 mod, Texture &texture)
 void gameLoop()
 {
 	Window window("test");
-	Renderer renderer = window.makeRenderer();
+	window.makeRenderer();
 
-	Texture background = renderer.makeTexture("background.jpg");
-	Texture foreground = renderer.makeTexture("foreground.jpg");
+	Texture background = window.renderer->makeTexture("background.jpg");
+	Texture foreground = window.renderer->makeTexture("foreground.jpg");
 
 	bool quit = false;
 	while(!quit) {
@@ -163,13 +163,13 @@ void gameLoop()
 			}
 		}
 
-		renderer.setDrawColor(0, 0, 0, 0xff);
-		renderer.clear();
+		window.renderer->setDrawColor(0, 0, 0, 0xff);
+		window.renderer->clear();
 
-		renderer.render(background);
-		renderer.render(foreground);
+		window.renderer->render(background);
+		window.renderer->render(foreground);
 
-		renderer.present();
+		window.renderer->present();
 	}
 }
 

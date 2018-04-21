@@ -54,9 +54,9 @@ void gameLoop()
 	Window window("test", Window::DEFAULT_WIDTH, Window::DEFAULT_HEIGHT,
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOW_RESIZABLE);
-	Renderer renderer = window.makeRenderer();
+	window.makeRenderer();
 
-	renderer.setDrawColor(0, 0, 0, 255); // black
+	window.renderer->setDrawColor(0, 0, 0, 255); // black
 
 	bool quit = false;
 	while(!quit) {
@@ -68,8 +68,8 @@ void gameLoop()
 				parseWindowEvent(e, window);
 			}
 		}
-		renderer.clear();
-		renderer.present();
+		window.renderer->clear();
+		window.renderer->present();
 	}
 }
 

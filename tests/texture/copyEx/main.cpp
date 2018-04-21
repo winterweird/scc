@@ -74,12 +74,12 @@ inline void parseKey(SDL_Keycode key, double &angle, SDL_RendererFlip &flip)
 void gameLoop()
 {
 	Window window("test");
-	Renderer renderer = window.makeRenderer();
+	window.makeRenderer();
 
 	const int windowWidth = window.getWidth();
 	const int windowHeight = window.getHeight();
 
-	Texture texture = renderer.makeTexture(imgName);
+	Texture texture = window.renderer->makeTexture(imgName);
 	double angle = 0.0;
 	SDL_Point center{windowWidth / 2, windowHeight / 2};
 	SDL_RendererFlip flip = SDL_FLIP_NONE;
@@ -95,12 +95,12 @@ void gameLoop()
 			}
 		}
 
-		renderer.setDrawColor(0xff, 0xff, 0xff, 0xff);
-		renderer.clear();
+		window.renderer->setDrawColor(0xff, 0xff, 0xff, 0xff);
+		window.renderer->clear();
 
-		renderer.render(texture, NULL, NULL, angle, &center, flip);
+		window.renderer->render(texture, NULL, NULL, angle, &center, flip);
 
-		renderer.present();
+		window.renderer->present();
 	}
 }
 
