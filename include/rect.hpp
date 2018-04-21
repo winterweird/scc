@@ -19,46 +19,13 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-// This is the only SCC header users should include.
-// Make sure to include SDL.h and any SDL subprojects' headers' that you want
-// before this!
-#ifndef SCC_HPP
-#define SCC_HPP
+#ifndef SCC_RECT_HPP
+#define SCC_RECT_HPP
 
-#if __cplusplus < 201103L
-# error "at least C++11 is needed"
-#endif
+namespace SDL {
 
-#if !defined(SDL_MAJOR_VERSION) || !defined(SDL_MINOR_VERSION)
-# error "Could not determine the SDL version. Is SDL.h included?"
-#endif
+typedef SDL_Rect Rect;
 
-#if SDL_MAJOR_VERSION < 2
-# error "at least SDL 2.0 is needed."
-#endif
-
-#ifdef SDL_IMAGE_MAJOR_VERSION
-# define HAVE_SDL_IMAGE
-#endif
-
-#ifdef SDL_TTF_MAJOR_VERSION
-# define HAVE_SDL_TTF
-# include "truetypefont.hpp"
-#endif
-
-#ifdef SDL_MIXER_MAJOR_VERSION
-# define HAVE_SDL_MIXER
-# include "audiochunk.hpp"
-# include "audiochannels.hpp"
-# include "music.hpp"
-#endif
-
-#include "glcontext.hpp"
-#include "renderer.hpp"
-#include "rect.hpp"
-#include "rwops.hpp"
-#include "surface.hpp"
-#include "texture.hpp"
-#include "window.hpp"
+}
 
 #endif
