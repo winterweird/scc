@@ -40,16 +40,16 @@ void quit()
 void gameLoop()
 {
 	Window window("test");
-	Renderer renderer = window.makeRenderer();
+	window.makeRenderer();
 	int outputWidth, outputHeight;
-	renderer.getOutputSize(&outputWidth, &outputHeight);
+	window.renderer->getOutputSize(&outputWidth, &outputHeight);
 
 	SDL_Log("window width: %d, renderer output width: %d\n",
 		window.getWidth(), outputWidth);
 	SDL_Log("window height: %d, renderer output height: %d\n",
 		window.getHeight(), outputHeight);
 
-	renderer.setDrawColor(0, 0, 0, 255); // black
+	window.renderer->setDrawColor(0, 0, 0, 255); // black
 
 	bool quit = false;
 	while(!quit) {
@@ -59,8 +59,8 @@ void gameLoop()
 				quit = true;
 			}
 		}
-		renderer.clear();
-		renderer.present();
+		window.renderer->clear();
+		window.renderer->present();
 	}
 }
 

@@ -164,7 +164,7 @@ void gameLoop()
 		SDL_WINDOW_OPENGL);
 
 	setContextFlags();
-	GLContext context = window.makeGLContext();
+	window.makeGLContext();
 
 	if(!initglew()) { return; }
 

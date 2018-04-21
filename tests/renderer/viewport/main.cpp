@@ -55,8 +55,8 @@ void parseKey(const SDL_Keycode &key, bool &useViewport)
 void gameLoop()
 {
 	Window window("test", 800, 600);
-	Renderer renderer = window.makeRenderer();
-	Texture texture = renderer.makeTexture(Surface::fromBitmap(bitmapName));
+	window.makeRenderer();
+	Texture texture = window.renderer->makeTexture(Surface::fromBitmap(bitmapName));
 
 	const int windowWidth = window.getWidth();
 	const int windowHeight = window.getHeight();
@@ -74,17 +74,17 @@ void gameLoop()
 				parseKey(e.key.keysym.sym, useViewport);
 			}
 		}
-		renderer.setDrawColor(0x00, 0x00, 0x00, 0xff); // black
-		renderer.clear();
+		window.renderer->setDrawColor(0x00, 0x00, 0x00, 0xff); // black
+		window.renderer->clear();
 
 		if(useViewport) {
-			renderer.setViewport(&viewport);
+			window.renderer->setViewport(&viewport);
 		} else {
-			renderer.setViewport(nullptr);
+			window.renderer->setViewport(nullptr);
 		}
-		renderer.render(texture, NULL, &screenRect);
+		window.renderer->render(texture, NULL, &screenRect);
 
-		renderer.present();
+		window.renderer->present();
 	}
 }
 

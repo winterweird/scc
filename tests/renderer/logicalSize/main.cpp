@@ -45,13 +45,13 @@ void gameLoop()
 	Window window("test", windowWidth, windowHeight,
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOW_RESIZABLE);
-	Renderer renderer = window.makeRenderer();
+	window.makeRenderer();
 
 	int logicalWidth = 100;
 	int logicalHeight = 100;
 	const SDL_Rect rect{0, 0, windowWidth, windowHeight};
 
-	renderer.setLogicalSize(logicalWidth, logicalHeight);
+	window.renderer->setLogicalSize(logicalWidth, logicalHeight);
 
 	bool quit = false;
 	while(!quit) {
@@ -62,15 +62,15 @@ void gameLoop()
 			} else if(e.type == SDL_KEYDOWN) {
 			}
 		}
-		renderer.setDrawColor(0x00, 0x00, 0x00, 0xff);
-		renderer.clear();
+		window.renderer->setDrawColor(0x00, 0x00, 0x00, 0xff);
+		window.renderer->clear();
 
-		renderer.setDrawColor(0xff, 0x00, 0x00, 0xff);
+		window.renderer->setDrawColor(0xff, 0x00, 0x00, 0xff);
 		// the red portion should always appear as a square, regardless
 		// of the window's dimensions
-		renderer.fillRect(&rect);
+		window.renderer->fillRect(&rect);
 
-		renderer.present();
+		window.renderer->present();
 	}
 }
 

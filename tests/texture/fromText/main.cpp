@@ -61,14 +61,14 @@ void quit()
 void gameLoop()
 {
 	Window window("test");
-	Renderer renderer = window.makeRenderer();
+	window.makeRenderer();
 
 	int windowWidth = window.getWidth();
 	int windowHeight = window.getHeight();
 
 	TrueTypeFont font(fontPath, fontSize);
 
-	Texture lowerTexture = renderer.makeTexture(
+	Texture lowerTexture = window.renderer->makeTexture(
 		"the quick brown fox jumps over the lazy dog",
 		font,
 		SDL_Color{0, 0, 0, 255}
@@ -76,7 +76,7 @@ void gameLoop()
 	int lowerWidth = lowerTexture.getWidth();
 	int lowerHeight = lowerTexture.getHeight();
 
-	Texture upperTexture = renderer.makeTexture(
+	Texture upperTexture = window.renderer->makeTexture(
 		"THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG",
 		font,
 		SDL_Color{0, 0, 0, 255}
@@ -84,7 +84,7 @@ void gameLoop()
 	int upperWidth = upperTexture.getWidth();
 	int upperHeight = upperTexture.getHeight();
 
-	renderer.setDrawColor(255, 255, 255, 255);
+	window.renderer->setDrawColor(255, 255, 255, 255);
 
 	bool quit = false;
 	while(!quit) {
@@ -94,16 +94,16 @@ void gameLoop()
 				quit = true;
 			}
 		}
-		renderer.clear();
+		window.renderer->clear();
 
-		renderer.render(lowerTexture,
+		window.renderer->render(lowerTexture,
 			(windowWidth - lowerWidth) / 2, 
 			(windowHeight - lowerHeight) / 4);
-		renderer.render(upperTexture,
+		window.renderer->render(upperTexture,
 			(windowWidth - upperWidth) / 2,
 			(windowHeight - upperHeight) * 3/4);
 
-		renderer.present();
+		window.renderer->present();
 	}
 }
 int main(int argc, char **argv)

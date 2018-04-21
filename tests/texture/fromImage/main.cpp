@@ -51,12 +51,12 @@ void quit()
 void gameLoop()
 {
 	Window window("test");
-	Renderer renderer = window.makeRenderer();
+	window.makeRenderer();
 
 	int windowWidth = window.getWidth();
 	int windowHeight = window.getHeight();
 
-	Texture imgTexture = renderer.makeTexture(imagePath);
+	Texture imgTexture = window.renderer->makeTexture(imagePath);
 	int textureWidth = imgTexture.getWidth();
 	int textureHeight = imgTexture.getHeight();
 
@@ -71,14 +71,14 @@ void gameLoop()
 				quit = true;
 			}
 		}
-		renderer.setDrawColor(255, 255, 255, 255);
-		renderer.clear();
+		window.renderer->setDrawColor(255, 255, 255, 255);
+		window.renderer->clear();
 
-		renderer.render(imgTexture,
+		window.renderer->render(imgTexture,
 			(windowWidth - textureWidth) / 2,
 			(windowHeight - textureHeight) / 2);
 
-		renderer.present();
+		window.renderer->present();
 	}
 }
 

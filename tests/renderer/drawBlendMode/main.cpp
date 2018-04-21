@@ -54,7 +54,7 @@ inline void parseKey(SDL_Keycode key, Uint8 &alpha)
 void gameLoop()
 {
 	Window window("test");
-	Renderer renderer = window.makeRenderer();
+	window.makeRenderer();
 
 	const int windowWidth = window.getWidth();
 	const int windowHeight = window.getHeight();
@@ -72,14 +72,14 @@ void gameLoop()
 				parseKey(e.key.keysym.sym, alpha);
 			}
 		}
-		renderer.setDrawColor(0xff, 0xff, 0xff, 0xff);
-		renderer.clear();
+		window.renderer->setDrawColor(0xff, 0xff, 0xff, 0xff);
+		window.renderer->clear();
 
-		renderer.setDrawBlendMode(SDL_BLENDMODE_BLEND);
-		renderer.setDrawColor(0x00, 0x00, 0x00, alpha);
-		renderer.fillRect(&rect);
+		window.renderer->setDrawBlendMode(SDL_BLENDMODE_BLEND);
+		window.renderer->setDrawColor(0x00, 0x00, 0x00, alpha);
+		window.renderer->fillRect(&rect);
 
-		renderer.present();
+		window.renderer->present();
 	}
 }
 

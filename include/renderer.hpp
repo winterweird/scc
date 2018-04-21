@@ -33,8 +33,6 @@ namespace SDL {
 class Window;
 class Surface;
 
-// warning: it is your responsibility to make sure the Renderer doesn't outlive
-// the Window that created it
 class Renderer {
 public:
 	static const Uint32 DEFAULT_INIT_FLAGS =
@@ -194,13 +192,6 @@ public:
 	// TODO readPixels(), updateTexture(), setClip(), getClip(),
 	// isClipEnabled()
 
-	// gives a weak_ptr to itself.
-	// The weak_ptr will expire when this object is destroyed.
-	std::weak_ptr<Renderer> getWeakPtr()
-	{
-		return std::weak_ptr<Renderer>(thisptr_);
-	}
-
 	// renderers must NOT be copied. They belong to 1 window only.
 	Renderer(const Renderer &that) = delete;
 	Renderer(Renderer &&that) = default; // moving is fine though
@@ -220,17 +211,12 @@ public:
 	};
 private:
 	std::unique_ptr<SDL_Renderer, Deleter> renderer_;
-	std::shared_ptr<Renderer> thisptr_; // stores *this
 };
 
 Renderer::Renderer(SDL_Window *window, Uint32 flags)
 	: renderer_{CStyleAlloc<Renderer::Deleter>::alloc(SDL_CreateRenderer,
 		"Making renderer failed", window, -1, flags)}
-	, thisptr_{nullptr}
-{
-	// empty dtor is used because we didn't allocate *this
-	thisptr_ = std::shared_ptr<Renderer>(this, [](Renderer *r) {});
-}
+{}
 
 bool Renderer::render(Texture &texture, int x, int y, const SDL_Rect *src) const
 {

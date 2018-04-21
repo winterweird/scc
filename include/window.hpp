@@ -41,6 +41,10 @@ public:
 	static const int DEFAULT_HEIGHT = 600;
 	static const Uint32 DEFAULT_INIT_FLAGS = 0;
 
+	// only one of these can be used at a time.
+	std::unique_ptr<Renderer> renderer;
+	std::unique_ptr<GLContext> context;
+
 	// note: the argument order differs from SDL_CreateWindow() to allow
 	// a better use of default values, eg Window("title", 800, 600)
 	Window(const char *title,
@@ -50,23 +54,25 @@ public:
 		int y = SDL_WINDOWPOS_UNDEFINED,
 		Uint32 flags = DEFAULT_INIT_FLAGS);
 
-	// will throw if there's already a Renderer associated with this Window;
-	// check hasRenderer() to prevent this.
 	template <typename ... Args>
-	Renderer makeRenderer(Args&& ... args)
+	void makeRenderer(Args&& ... args)
 	{
-		Renderer renderer(window_.get(), std::forward<Args>(args)...);
-		rendererPtr_ = renderer.getWeakPtr();
-		return renderer;
+		if(!renderer && !context) {
+			renderer = std::unique_ptr<Renderer>(new Renderer(
+				window_.get(), std::forward<Args>(args)...));
+		}
 	}
 
 	// this not only creates an OpenGL context but also makes it the current
 	// context. Will throw if the window wasn't created with the
 	// SDL_WINDOW_OPENGL flag.
 	template <typename ... Args>
-	GLContext makeGLContext(Args&& ... args)
+	void makeGLContext(Args&& ... args)
 	{
-		return GLContext(window_.get(), std::forward<Args>(args)...);
+		if(!renderer && !context) {
+			context = std::unique_ptr<GLContext>(new GLContext(
+				window_.get(), std::forward<Args>(args)...));
+		}
 	}
 
 	// SDL_GetWindowSize(). You may pass NULL as a parameter if you're not
@@ -145,10 +151,8 @@ public:
 			rects.data(), rects.size()) >= 0;
 	}
 
-	// returns a weak pointer to the renderer this window created.
-	std::weak_ptr<Renderer> getRenderer() { return rendererPtr_; }
-
-	bool hasRenderer() { return !rendererPtr_.expired(); }
+	bool hasRenderer() { return static_cast<bool>(renderer); }
+	bool hasContext() { return static_cast<bool>(context); }
 
 	// I don't think SDL has any way of copying windows...
 	Window(const Window &that) = delete;
@@ -169,7 +173,6 @@ public:
 	};
 private:
 	std::unique_ptr<SDL_Window, Deleter> window_;
-	std::weak_ptr<Renderer> rendererPtr_;
 };
 
 Window::Window(const char *title, int width, int height, int x, int y,

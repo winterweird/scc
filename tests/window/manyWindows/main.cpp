@@ -179,19 +179,16 @@ void gameLoop()
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOW_RESIZABLE));
 
-	std::list<Renderer> renderers;
 	for(auto &window : windows) {
-		renderers.push_back(window.makeRenderer());
-	}
-
-	SDL_Log("window IDs:\n");
-	for(auto &window : windows) {
-		SDL_Log("%s: %d", window.getTitle(), window.getID());
+		window.makeRenderer();
 	}
 
 	int i = 0;
-	for(auto &renderer : renderers) {
-		renderer.setDrawColor(colors[i][0], colors[i][1],
+	SDL_Log("window IDs:\n");
+	for(auto &window : windows) {
+		SDL_Log("%s: %d", window.getTitle(), window.getID());
+
+		window.renderer->setDrawColor(colors[i][0], colors[i][1],
 			colors[i][2], colors[i][3]);
 		i++;
 		i %= numColors;
@@ -211,9 +208,9 @@ void gameLoop()
 				parseKeyEvent(e.key, windows);
 			}
 		}
-		for(auto &renderer : renderers) {
-			renderer.clear();
-			renderer.present();
+		for(auto &window : windows) {
+			window.renderer->clear();
+			window.renderer->present();
 		}
 	}
 }
