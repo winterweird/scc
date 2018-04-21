@@ -23,6 +23,7 @@
 #define SCC_GLCONTEXT_HPP
 
 #include "null.hpp"
+#include <algorithm> // std::swap
 
 namespace SDL {
 
