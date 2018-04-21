@@ -3,6 +3,15 @@ I have no intentions of mantaining this software.
 
 **Pull requests will be ignored.**
 
+# Another NOTE
+
+I accidentally forked the project when checking it out on Github, but whatever.
+Maybe I'll start developing on this project and add functionality I'd like.
+
+Vegard.
+
+**Pull requests might still be ignored.**
+
 ## What is it?
 SCC (SDL C++ Classes) is a small header-only C++11 library that provides
 classes for nearly all SDL types, including those coming from some subprojects
